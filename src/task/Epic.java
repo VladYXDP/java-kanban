@@ -1,13 +1,14 @@
 package task;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
 
-    ArrayList<Subtask> subtasks;
+    private ArrayList<Subtask> subtasks;
 
-    public Epic(String name, String description, int id) {
-        super(name, description, id);
+    public Epic(String name, String description) {
+        super(name, description);
         subtasks = new ArrayList<>();
     }
 
@@ -18,6 +19,20 @@ public class Epic extends Task {
     public void removeSubtask(Subtask subtask) {
         subtasks.remove(subtask);
         validateStatus();
+    }
+
+    public void addSubtask(Subtask subtask) {
+        if (subtasks.contains(subtask)) {
+            System.out.println("Такой subtask уже существует");
+        } else {
+            subtask.setStatus(TaskStatus.NEW);
+            subtasks.add(subtask);
+        }
+    }
+
+    public void removeAllSubtask() {
+        subtasks.clear();
+        setStatus(TaskStatus.NEW);
     }
 
     public void changeSubtask(Subtask newSubtask, Subtask oldSubtask) {
@@ -55,6 +70,18 @@ public class Epic extends Task {
         } else {
             setStatus(TaskStatus.IN_PROGRESS);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtasks, epic.subtasks) && Objects.equals(getId(),epic.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return subtasks != null ? subtasks.hashCode() : 0;
     }
 
     @Override
