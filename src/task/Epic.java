@@ -18,7 +18,7 @@ public class Epic extends Task {
 
     public void removeSubtask(Subtask subtask) {
         subtasks.remove(subtask);
-        validateStatus();
+        updateStatus();
     }
 
     public void addSubtask(Subtask subtask) {
@@ -27,6 +27,7 @@ public class Epic extends Task {
         } else {
             subtask.setStatus(TaskStatus.NEW);
             subtasks.add(subtask);
+            updateStatus();
         }
     }
 
@@ -38,10 +39,10 @@ public class Epic extends Task {
     public void changeSubtask(Subtask newSubtask, Subtask oldSubtask) {
         subtasks.remove(oldSubtask);
         subtasks.add(newSubtask);
-        validateStatus();
+        updateStatus();
     }
 
-    private void validateStatus() {
+    private void updateStatus() {
         int newCount = 0;
         int doneCount = 0;
         int inProgressCount = 0;
