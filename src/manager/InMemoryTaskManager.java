@@ -7,36 +7,44 @@ import task.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     private int taskIndex = 0;
 
-    public ArrayList<Task> getAllTask() {
+    @Override
+    public List<Task> getAllTask() {
         return new ArrayList<>(tasks.values());
     }
 
-    public ArrayList<Epic> getAllEpic() {
+    @Override
+    public List<Epic> getAllEpic() {
         return new ArrayList<>(epics.values());
     }
 
-    public ArrayList<Subtask> getAllSubtask() {
+    @Override
+    public List<Subtask> getAllSubtask() {
         return new ArrayList<>(subtasks.values());
     }
 
+    @Override
     public void removeAllTask() {
         tasks.clear();
     }
 
+    @Override
     public void removeAllEpic() {
         epics.clear();
         subtasks.clear();
     }
 
+    @Override
     public void removeAllSubtask() {
         for (Epic epic : epics.values()) {
             epic.removeAllSubtask();
@@ -44,18 +52,25 @@ public class Manager {
         subtasks.clear();
     }
 
+    @Override
     public Task getTask(int id) {
+        historyManager.addTask(tasks.get(id));
         return tasks.get(id);
     }
 
+    @Override
     public Epic getEpic(int id) {
+        historyManager.addTask(epics.get(id));
         return epics.get(id);
     }
 
+    @Override
     public Subtask getSubtask(int id) {
+        historyManager.addTask(subtasks.get(id));
         return subtasks.get(id);
     }
 
+    @Override
     public void createTask(Task task) {
         if (task != null && !tasks.containsKey(task.getId())) {
             task.setStatus(TaskStatus.NEW);
@@ -64,6 +79,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void createEpic(Epic epic) {
         if (epic != null && !epics.containsKey(epic.getId())) {
             epic.setStatus(TaskStatus.NEW);
@@ -72,6 +88,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void createSubtask(Subtask subtask) {
         if (subtask != null && !subtasks.containsKey(subtask.getId())) {
             if (epics.containsKey(subtask.getEpicId())) {
@@ -82,13 +99,14 @@ public class Manager {
         }
     }
 
+    @Override
     public void updateTask(Task task) {
         if (task != null) {
             tasks.put(task.getId(), task);
         }
     }
 
-    //Тут несовсем понял. Сделал так
+    @Override
     public void updateEpic(Epic epic) {
         if (epic != null) {
             Epic oldEpic = epics.get(epic.getId());
@@ -100,6 +118,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void updateSubtask(Subtask subtask) {
         if (subtask != null && epics.containsKey(subtask.getEpicId())) {
             subtasks.put(subtask.getId(), subtask);
@@ -113,10 +132,12 @@ public class Manager {
         }
     }
 
+    @Override
     public void removeTaskById(int id) {
         tasks.remove(id);
     }
 
+    @Override
     public void removeEpicById(int id) {
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
@@ -127,6 +148,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             Subtask subtask = subtasks.get(id);
@@ -137,7 +159,13 @@ public class Manager {
         }
     }
 
+    @Override
     public ArrayList<Subtask> getSubtaskByEpic(Epic epic) {
         return epic.getSubtasks();
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 }
