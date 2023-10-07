@@ -19,14 +19,12 @@ public class Subtask extends Task {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Subtask subtask = (Subtask) o;
-        return getId() == subtask.getId();
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return getId();
+        return super.hashCode();
     }
 
     @Override

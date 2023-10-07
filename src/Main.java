@@ -9,8 +9,7 @@ import task.TaskStatus;
 public class Main {
 
     public static void main(String[] args) {
-        Managers managers = new Managers();
-        TaskManager taskManager = managers.getDefault();
+        TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         Task task1 = new Task("Task1", "Desc task1");
