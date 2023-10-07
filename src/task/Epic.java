@@ -36,10 +36,15 @@ public class Epic extends Task {
         setStatus(TaskStatus.NEW);
     }
 
-    public void changeSubtask(Subtask newSubtask, Subtask oldSubtask) {
-        subtasks.remove(oldSubtask);
-        subtasks.add(newSubtask);
-        updateStatus();
+    public void changeSubtask(Subtask newSubtask) {
+        for (Subtask subtask : subtasks) {
+            if (subtask.getId() == newSubtask.getId()) {
+                subtasks.remove(subtask);
+                subtasks.add(newSubtask);
+                updateStatus();
+                break;
+            }
+        }
     }
 
     private void updateStatus() {
@@ -77,7 +82,7 @@ public class Epic extends Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subtasks, epic.subtasks) && Objects.equals(getId(),epic.getId());
+        return Objects.equals(subtasks, epic.subtasks) && Objects.equals(getId(), epic.getId());
     }
 
     @Override
