@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class CustomLinkedList<E extends Task> {
 
-    private final Map<Integer, Node<E>> taskHashTable = new HashMap<>();
+    private final Map<Integer, Node<E>> tasks = new HashMap<>();
     private Node<E> head;
     private Node<E> tail;
 
@@ -29,62 +29,50 @@ public class CustomLinkedList<E extends Task> {
     }
 
     public void linkTask(E task) {
+        if (tasks.containsKey(task.getId())) {
+            if (tail.task.equals(task)) {
+                return;
+            }
+            removeNode(tasks.get(task.getId()));
+        }
         if (head == null) {
             head = new Node<>(task, null, null);
             tail = head;
         } else if (tail == head) {
-            if (taskHashTable.containsKey(task.getId())) {
-                taskHashTable.clear();
-                head = null;
-                linkTask(task);
-            } else {
-                tail = new Node<>(task, null, head);
-            }
+            tail = new Node<>(task, null, head);
+            head.next = tail;
         } else {
             Node<E> oldTail = tail;
             tail = new Node<>(task, null, oldTail);
-            if (taskHashTable.containsKey(task.getId())) {
-                removeNode(taskHashTable.get(task.getId()));
-            }
+            oldTail.next = tail;
         }
-        taskHashTable.put(task.getId(), tail);
+        tasks.put(task.getId(), tail);
     }
 
     public void removeNode(Node<E> removingNode) {
-        Node<E> next = removingNode.next;
-        Node<E> prev = removingNode.prev;
-        prev.next = next;
-        next.prev = prev;
-        taskHashTable.remove(removingNode.task.getId());
+        if (head == removingNode) {
+            if (head.next == tail) {
+                tail.prev = null;
+                head = tail;
+            } else {
+                head.next.prev = null;
+                head = head.next;
+            }
+        } else {
+            Node<E> prev = removingNode.prev;
+            removingNode.prev.next = removingNode.next;
+            removingNode.next.prev = prev;
+        }
+        tasks.remove(removingNode.task.getId());
     }
 
     public List<Task> getTasks() {
-        List<Task> tasks = new ArrayList<>();
+        List<Task> history = new ArrayList<>();
         Node<E> node = head;
         while (node != null) {
-            tasks.add(node.task);
+            history.add(node.task);
             node = node.next;
         }
-        return tasks;
-    }
-
-    public Map<Integer, Node<E>> getTaskHashTable() {
-        return taskHashTable;
-    }
-
-    public Node<E> getHead() {
-        return head;
-    }
-
-    public void setHead(Node<E> head) {
-        this.head = head;
-    }
-
-    public Node<E> getTail() {
-        return tail;
-    }
-
-    public void setTail(Node<E> tail) {
-        this.tail = tail;
+        return history;
     }
 }
