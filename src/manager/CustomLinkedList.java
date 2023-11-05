@@ -66,6 +66,12 @@ public class CustomLinkedList<E extends Task> {
         tasks.remove(removingNode.task.getId());
     }
 
+    public void remove(int id) {
+        if (tasks.containsKey(id)) {
+            removeNode(tasks.get(id));
+        }
+    }
+
     public List<Task> getTasks() {
         List<Task> history = new ArrayList<>();
         Node<E> node = head;

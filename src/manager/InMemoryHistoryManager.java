@@ -2,12 +2,10 @@ package manager;
 
 import task.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final List<Task> history = new ArrayList<>();
     private final CustomLinkedList<Task> customLinkedList = new CustomLinkedList<>();
 
     @Override
@@ -22,10 +20,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        for (Task task : history) {
-            if (task.getId() == id) {
-                history.remove(task);
-            }
-        }
+        customLinkedList.remove(id);
     }
 }
