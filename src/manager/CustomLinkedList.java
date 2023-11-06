@@ -51,12 +51,23 @@ public class CustomLinkedList<E extends Task> {
 
     public void removeNode(Node<E> removingNode) {
         if (head == removingNode) {
-            if (head.next == tail) {
+            if (head == tail) {
+                head = null;
+                tail = null;
+            } else if (head.next == tail) {
                 tail.prev = null;
                 head = tail;
             } else {
-                head.next.prev = null;
                 head = head.next;
+                head.prev = null;
+            }
+        } else if (tail == removingNode) {
+            if (tail.prev == head) {
+                head.next = null;
+                tail = head;
+            } else {
+                tail = tail.prev;
+                tail.next = null;
             }
         } else {
             Node<E> prev = removingNode.prev;

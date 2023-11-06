@@ -34,13 +34,16 @@ public class Main {
         taskManager.getTask(3);
         System.out.println(taskManager.getHistory());
         taskManager.getTask(4);
-        System.out.println(taskManager.getHistory());
         taskManager.getTask(5);
         System.out.println(taskManager.getHistory());
-        taskManager.getTask(4);
+        taskManager.removeTaskById(5);
         System.out.println(taskManager.getHistory());
-        taskManager.getTask(3);
-        System.out.println(taskManager.getHistory());
+//        taskManager.getTask(5);
+//        System.out.println(taskManager.getHistory());
+//        taskManager.getTask(4);
+//        System.out.println(taskManager.getHistory());
+//        taskManager.getTask(3);
+//        System.out.println(taskManager.getHistory());
 //        taskManager.getTask(4);
 //        System.out.println(taskManager.getHistory());
     }
