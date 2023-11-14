@@ -1,5 +1,7 @@
 package task;
 
+import manager.task.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -61,10 +63,16 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return String.format("%d,%s,%s,%s,%s",id, TaskType.TASK.name(), name, status, description);
     }
+
+
+    //    @Override
+//    public String toString() {
+//        return "Task{" +
+//                "name='" + name + '\'' +
+//                ", description='" + description + '\'' +
+//                ", status=" + status +
+//                '}';
+//    }
 }
