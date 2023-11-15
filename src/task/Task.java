@@ -17,6 +17,13 @@ public class Task {
         status = TaskStatus.NEW;
     }
 
+    public Task(String name, String description, int id, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }
@@ -61,18 +68,16 @@ public class Task {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%d,%s,%s,%s,%s",id, TaskType.TASK.name(), name, status, description);
+    public String taskToString() {
+        return String.format("%d,%s,%s,%s,%s", id, TaskType.TASK.name(), name, status, description);
     }
 
-
-    //    @Override
-//    public String toString() {
-//        return "Task{" +
-//                "name='" + name + '\'' +
-//                ", description='" + description + '\'' +
-//                ", status=" + status +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

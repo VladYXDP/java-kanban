@@ -14,6 +14,11 @@ public class Epic extends Task {
         subtasks = new ArrayList<>();
     }
 
+    public Epic(String name, String description, int id, TaskStatus status) {
+        super(name, description, id, status);
+        subtasks = new ArrayList<>();
+    }
+
     public ArrayList<Subtask> getSubtasks() {
         return subtasks;
     }
@@ -30,6 +35,12 @@ public class Epic extends Task {
             subtask.setStatus(TaskStatus.NEW);
             subtasks.add(subtask);
             updateStatus();
+        }
+    }
+
+    public void addSubtaskFromFile(Subtask subtask) {
+        if(!subtasks.contains(subtask)) {
+            subtasks.add(subtask);
         }
     }
 
@@ -92,17 +103,16 @@ public class Epic extends Task {
         return subtasks != null ? subtasks.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
+    public String epicToString() {
         return String.format("%d,%s,%s,%s,%s", getId(), TaskType.EPIC.name(), getName(), getStatus(), getDescription());
     }
 
-//    @Override
-//    public String toString() {
-//        return "Epic{" +
-//                "name='" + getName() + '\'' +
-//                ", description='" + getDescription() + '\'' +
-//                ", status=" + getStatus() +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                '}';
+    }
 }
