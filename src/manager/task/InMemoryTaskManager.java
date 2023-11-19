@@ -185,6 +185,18 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    public void loadHistory(List<Integer> historyIdList) {
+        for (Integer historyId : historyIdList) {
+            if (tasks.containsKey(historyId)) {
+                historyManager.addTask(tasks.get(historyId));
+            } else if (epics.containsKey(historyId)) {
+                historyManager.addTask(epics.get(historyId));
+            } else if (subtasks.containsKey(historyId)) {
+                historyManager.addTask(subtasks.get(historyId));
+            }
+        }
+    }
+
     public void addTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);

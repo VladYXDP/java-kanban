@@ -1,13 +1,17 @@
 import manager.Managers;
+import manager.task.FileBackedTasksManager;
 import manager.task.TaskManager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 
+import java.io.File;
+
 public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
+        taskManager = new FileBackedTasksManager(new File("tasks.csv"), null);
 
         System.out.println(taskManager.getHistory());
 

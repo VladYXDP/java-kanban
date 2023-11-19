@@ -22,4 +22,5 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         customLinkedList.remove(id);
     }
+
 }
