@@ -67,6 +67,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
+    public Task getTask(int id) {
+        return super.getTask(id);
+    }
+
+    @Override
+    public Epic getEpic(int id) {
+        return super.getEpic(id);
+    }
+
+    @Override
+    public Subtask getSubtask(int id) {
+        return super.getSubtask(id);
+    }
+
+    @Override
     public void updateTask(Task task) {
         super.updateTask(task);
         save();
@@ -112,11 +127,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     bw.newLine();
                 }
                 for (Epic epic : getAllEpic()) {
-                    bw.write(epic.epicToString());
+                    bw.write(epic.taskToString());
                     bw.newLine();
                 }
                 for (Subtask subtask : getAllSubtask()) {
-                    bw.write(subtask.subtaskToString());
+                    bw.write(subtask.taskToString());
                     bw.newLine();
                 }
                 bw.newLine();
@@ -161,7 +176,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         loadHistory(historyFromString(loadedStringTasks));
-        System.out.println(getHistory());
     }
 
     private static String historyToString(List<Task> historyTasks) {
@@ -180,5 +194,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             historyIdList.add(Integer.parseInt(history));
         }
         return historyIdList;
+    }
+
+    private void loadHistory(List<Integer> historyIdList) {
+        for (Integer historyId : historyIdList) {
+            if (tasks.containsKey(historyId)) {
+                historyManager.addTask(tasks.get(historyId));
+            } else if (epics.containsKey(historyId)) {
+                historyManager.addTask(epics.get(historyId));
+            } else if (subtasks.containsKey(historyId)) {
+                historyManager.addTask(subtasks.get(historyId));
+            }
+        }
+    }
+
+    private void addTask(Task task) {
+        if (!tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
+        }
+    }
+
+    private void addEpic(Epic epic) {
+        if (!epics.containsKey(epic.getId())) {
+            epics.put(epic.getId(), epic);
+        }
+    }
+
+    private void addSubtask(Subtask subtask) {
+        if (!subtasks.containsKey(subtask.getId())) {
+            subtasks.put(subtask.getId(), subtask);
+            epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
+        }
     }
 }

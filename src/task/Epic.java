@@ -3,11 +3,12 @@ package task;
 import manager.task.TaskType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
 
-    private ArrayList<Subtask> subtasks;
+    private List<Subtask> subtasks;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -19,7 +20,7 @@ public class Epic extends Task {
         subtasks = new ArrayList<>();
     }
 
-    public ArrayList<Subtask> getSubtasks() {
+    public List<Subtask> getSubtasks() {
         return subtasks;
     }
 
@@ -103,7 +104,8 @@ public class Epic extends Task {
         return subtasks != null ? subtasks.hashCode() : 0;
     }
 
-    public String epicToString() {
+    @Override
+    public String taskToString() {
         return String.format("%d,%s,%s,%s,%s", getId(), TaskType.EPIC.name(), getName(), getStatus(), getDescription());
     }
 

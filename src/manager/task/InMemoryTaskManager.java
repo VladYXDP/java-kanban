@@ -13,10 +13,10 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     private int taskIndex = 0;
 
@@ -176,43 +176,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getSubtaskByEpic(Epic epic) {
+    public List<Subtask> getSubtaskByEpic(Epic epic) {
         return epic.getSubtasks();
     }
 
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
-    }
-
-    public void loadHistory(List<Integer> historyIdList) {
-        for (Integer historyId : historyIdList) {
-            if (tasks.containsKey(historyId)) {
-                historyManager.addTask(tasks.get(historyId));
-            } else if (epics.containsKey(historyId)) {
-                historyManager.addTask(epics.get(historyId));
-            } else if (subtasks.containsKey(historyId)) {
-                historyManager.addTask(subtasks.get(historyId));
-            }
-        }
-    }
-
-    public void addTask(Task task) {
-        if (!tasks.containsKey(task.getId())) {
-            tasks.put(task.getId(), task);
-        }
-    }
-
-    public void addEpic(Epic epic) {
-        if (!epics.containsKey(epic.getId())) {
-            epics.put(epic.getId(), epic);
-        }
-    }
-
-    public void addSubtask(Subtask subtask) {
-        if (!subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask);
-            epics.get(subtask.getEpicId()).addSubtaskFromFile(subtask);
-        }
     }
 }

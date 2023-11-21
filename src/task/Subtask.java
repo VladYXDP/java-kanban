@@ -34,7 +34,8 @@ public class Subtask extends Task {
         return super.hashCode();
     }
 
-    public String subtaskToString() {
+    @Override
+    public String taskToString() {
         return String.format("%d,%s,%s,%s,%s,%s",getId(), TaskType.SUBTASK.name(), getName(), getStatus(), getDescription(), getEpicId());
     }
 
