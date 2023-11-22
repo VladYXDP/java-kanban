@@ -68,16 +68,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Task getTask(int id) {
+        save();
         return super.getTask(id);
     }
 
     @Override
     public Epic getEpic(int id) {
+        save();
         return super.getEpic(id);
     }
 
     @Override
     public Subtask getSubtask(int id) {
+        save();
         return super.getSubtask(id);
     }
 
@@ -211,18 +214,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void addTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
+            taskIndex = task.getId();
         }
     }
 
     private void addEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) {
             epics.put(epic.getId(), epic);
+            taskIndex = epic.getId();
         }
     }
 
     private void addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             subtasks.put(subtask.getId(), subtask);
+            taskIndex = subtask.getId();
             epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
         }
     }
