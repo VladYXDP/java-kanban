@@ -115,6 +115,8 @@ public class InMemoryTaskManager implements TaskManager {
                 epics.get(subtask.getEpicId()).addSubtask(subtask);
                 subtask.setId(++taskIndex);
                 subtasks.put(subtask.getId(), subtask);
+            } else {
+                throw new RuntimeException("Отсутствует Эпик для подзадачи.");
             }
         }
     }
@@ -183,5 +185,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    public int getTaskIndex() {
+        return taskIndex;
     }
 }

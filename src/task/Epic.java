@@ -39,12 +39,6 @@ public class Epic extends Task {
         }
     }
 
-    public void addSubtaskFromFile(Subtask subtask) {
-        if(!subtasks.contains(subtask)) {
-            subtasks.add(subtask);
-        }
-    }
-
     public void removeAllSubtask() {
         subtasks.clear();
         setStatus(TaskStatus.NEW);
