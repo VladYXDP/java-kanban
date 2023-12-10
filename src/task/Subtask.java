@@ -2,17 +2,26 @@ package task;
 
 import manager.task.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private int epicId;
 
-    public Subtask(String name, String description, int epicId) {
-        super(name, description);
+    public Subtask(String name, String description, int epicId, Duration duration) {
+        super(name, description, duration);
         this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, int id, TaskStatus status, int epicId) {
-        super(name, description, id, status);
+    public Subtask(String name, String description, int id, TaskStatus status, int epicId, Duration duration) {
+        super(name, description, id, status, duration);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, int id, TaskStatus status, int epicId, LocalDateTime startTime,
+                   Duration duration) {
+        super(name, description, id, status, startTime, duration);
         this.epicId = epicId;
     }
 
@@ -36,7 +45,8 @@ public class Subtask extends Task {
 
     @Override
     public String taskToString() {
-        return String.format("%d,%s,%s,%s,%s,%s",getId(), TaskType.SUBTASK.name(), getName(), getStatus(), getDescription(), getEpicId());
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s",getId(), TaskType.SUBTASK.name(), getName(), getStatus(),
+                getDescription(), getEpicId(), startTime, duration, getEndTime());
     }
 
     @Override

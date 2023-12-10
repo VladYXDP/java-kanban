@@ -4,51 +4,26 @@ import manager.task.TaskManager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
+import task.TaskStatus;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-        taskManager = new FileBackedTasksManager(new File("tasks.csv"), null);
-
-        System.out.println(taskManager.getHistory());
-
-        Task task1 = new Task("Task1", "Desc task1");
-        Task task2 = new Task("Task2", "Desc task2");
-        Task task3 = new Task("Task3", "Desc task3");
-
-        Epic epic1 = new Epic("Epic1", "Desc epic1");
-        taskManager.createEpic(epic1);
-        Subtask subtask1 = new Subtask("Subtask1", "Desc subtask1", epic1.getId());
-        Subtask subtask2 = new Subtask("Subtask2", "Desc subtask2", epic1.getId());
-
-        Epic epic2 = new Epic("Epic2", "Desc epic2");
-        taskManager.createEpic(epic2);
-        Subtask subtask3 = new Subtask("Subtask3", "Desc subtask3", epic2.getId());
-
+        TaskManager fileManager = new FileBackedTasksManager(new File("task.csv"), null);
+        Task task = new Task("name", "desc", Duration.ofHours(12));
+        taskManager.createTask(task);
+        Task task1 = new Task("name1", "desc", Duration.ofHours(12));
         taskManager.createTask(task1);
-        taskManager.createTask(task2);
-        taskManager.createTask(task3);
-        taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
-        taskManager.createSubtask(subtask3);
+        task1.setStartTime(LocalDateTime.parse("2023-12-09T18:44:06.456050"));
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
 
-        taskManager.getTask(3);
-        System.out.println(taskManager.getHistory());
-        taskManager.getTask(4);
-        taskManager.getTask(5);
-        System.out.println(taskManager.getHistory());
-        taskManager.removeTaskById(5);
-        System.out.println(taskManager.getHistory());
-//        taskManager.getTask(5);
-//        System.out.println(taskManager.getHistory());
-//        taskManager.getTask(4);
-//        System.out.println(taskManager.getHistory());
-//        taskManager.getTask(3);
-//        System.out.println(taskManager.getHistory());
-//        taskManager.getTask(4);
-//        System.out.println(taskManager.getHistory());
+//        fileManager.createEpic(new Epic("name", "desc"));
+//        fileManager.createSubtask(new Subtask("name", "desc", 3, Duration.ofHours(12)));
+//        fileManager.createSubtask(new Subtask("name", "desc", 3, Duration.ofHours(10)));
     }
 }

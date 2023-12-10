@@ -60,15 +60,15 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.removeAllEpic();
     }
 
+    public void removeAllSubtask() {
+        manager.removeAllSubtask();
+    }
+
     public void clearAll() {
         manager.removeAllTask();
         manager.removeAllEpic();
         manager.removeAllSubtask();
         taskIndex = 0;
-    }
-
-    public void removeAllSubtask() {
-        manager.removeAllSubtask();
     }
 
     public void updateTask(Task task) {
@@ -81,6 +81,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     public void updateSubtask(Subtask subtask) {
         manager.updateSubtask(subtask);
+    }
+
+    public void removeTaskById(int id) {
+        manager.removeTaskById(id);
+    }
+
+    public void removeEpicById(int id) {
+        manager.removeEpicById(id);
+    }
+
+    public void removeSubtaskById(int id) {
+        manager.removeSubtaskById(id);
     }
 
     public List<Subtask> getSubtaskByEpic(Epic epic) {

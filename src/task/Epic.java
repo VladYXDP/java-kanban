@@ -2,22 +2,32 @@ package task;
 
 import manager.task.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
 
+    private LocalDateTime endTime;
     private List<Subtask> subtasks;
 
     public Epic(String name, String description) {
-        super(name, description);
+        super(name, description, Duration.ofSeconds(0));
+        startTime = null;
         subtasks = new ArrayList<>();
     }
 
     public Epic(String name, String description, int id, TaskStatus status) {
-        super(name, description, id, status);
+        super(name, description, id, status, Duration.ofSeconds(0));
         subtasks = new ArrayList<>();
+    }
+
+    public Epic(String name, String description, int id, TaskStatus status, LocalDateTime statTime, Duration duration,
+                LocalDateTime endTime) {
+        super(name, description, id, status, statTime, duration);
+        this.endTime = endTime;
     }
 
     public List<Subtask> getSubtasks() {
@@ -27,6 +37,8 @@ public class Epic extends Task {
     public void removeSubtask(Subtask subtask) {
         subtasks.remove(subtask);
         updateStatus();
+        calculateStartTime();
+        calculateEndTime();
     }
 
     public void addSubtask(Subtask subtask) {
@@ -36,12 +48,16 @@ public class Epic extends Task {
             subtask.setStatus(TaskStatus.NEW);
             subtasks.add(subtask);
             updateStatus();
+            calculateStartTime();
+            calculateEndTime();
         }
     }
 
     public void removeAllSubtask() {
         subtasks.clear();
         setStatus(TaskStatus.NEW);
+        startTime = null;
+        duration = null;
     }
 
     public void changeSubtask(Subtask newSubtask) {
@@ -86,6 +102,22 @@ public class Epic extends Task {
         }
     }
 
+    private void calculateStartTime() {
+        for (int i = 0; i < subtasks.size(); i++) {
+            startTime = subtasks.get(i).startTime;
+            if (startTime.isBefore(subtasks.get(i).startTime)) {
+                startTime = subtasks.get(i + 1).startTime;
+            }
+        }
+    }
+
+    private void calculateEndTime() {
+        for (int i = 0; i < subtasks.size(); i++) {
+            duration = duration.plus(subtasks.get(i).duration);
+        }
+        endTime = startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -100,7 +132,8 @@ public class Epic extends Task {
 
     @Override
     public String taskToString() {
-        return String.format("%d,%s,%s,%s,%s", getId(), TaskType.EPIC.name(), getName(), getStatus(), getDescription());
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s", getId(), TaskType.EPIC.name(), getName(), getStatus(),
+                getDescription(), startTime, duration, endTime);
     }
 
     @Override

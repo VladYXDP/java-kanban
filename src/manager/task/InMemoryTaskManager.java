@@ -7,9 +7,7 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -17,6 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final Set<Task> prioritizedTasks = new TreeSet<>(new TaskComparatorByStartTime());
 
     protected int taskIndex = 0;
 
@@ -187,7 +186,22 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public int getTaskIndex() {
-        return taskIndex;
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        prioritizedTasks.addAll(tasks.values());
+        prioritizedTasks.addAll(epics.values());
+        prioritizedTasks.addAll(subtasks.values());
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    public static class TaskComparatorByStartTime implements Comparator<Task> {
+        @Override
+        public int compare(Task o1, Task o2) {
+            if (o1.getStartTime().isBefore(o2.getStartTime())) {
+                return -1;
+            } else if (o1.getStartTime().equals(o2.getStartTime()))
+                return 0;
+            return 1;
+        }
     }
 }

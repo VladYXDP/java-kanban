@@ -9,6 +9,8 @@ import task.TaskStatus;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private final List<String> loadedStringTasks;
 
     public static void main(String[] args) {
-        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("tasks.csv"));
+        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("task.csv"));
         fileBackedTasksManager.createTaskFromString();
     }
 
@@ -126,7 +128,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void save() {
         if (file != null) {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.getName(), StandardCharsets.UTF_8, false))) {
-                bw.write("id,type,name,status,description,epic");
+                bw.write("id,type,name,status,description,epic,start,duration,end");
                 bw.newLine();
                 for (Task task : getAllTask()) {
                     bw.write(task.taskToString());
@@ -173,12 +175,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             String name = taskStrSplit[2];
             TaskStatus status = TaskStatus.getTaskStatusByString(taskStrSplit[3]);
             String desc = taskStrSplit[4];
+            String startTime = taskStrSplit[5];
+            String duration = taskStrSplit[6];
+            String endTime = taskStrSplit[7];
             if (TASK.name().equals(taskStrSplit[1])) {
-                addTask(new Task(name, desc, id, status));
+                addTask(new Task(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration)));
             } else if (TaskType.EPIC.name().equals(taskStrSplit[1])) {
-                addEpic(new Epic(name, desc, id, status));
+                addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration),
+                        LocalDateTime.parse(endTime)));
             } else {
-                addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5])));
+                addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5]), LocalDateTime.parse(startTime),
+                        Duration.parse(duration)));
             }
         }
         loadHistory(historyFromString(loadedStringTasks));
