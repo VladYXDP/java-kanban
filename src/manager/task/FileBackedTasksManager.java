@@ -19,7 +19,6 @@ import static manager.task.TaskType.TASK;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
-
     private final List<String> loadedStringTasks;
 
     public static void main(String[] args) {

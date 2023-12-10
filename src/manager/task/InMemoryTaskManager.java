@@ -7,7 +7,6 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -96,7 +95,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        if (task != null && !tasks.containsKey(task.getId()) && validateStartTime(task.getStartTime())) {
+        if (task != null && !tasks.containsKey(task.getId()) && validateStartTime(task)) {
             task.setStatus(TaskStatus.NEW);
             task.setId(++taskIndex);
             tasks.put(task.getId(), task);
@@ -106,7 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createEpic(Epic epic) {
-        if (epic != null && !epics.containsKey(epic.getId()) && validateStartTime(epic.getStartTime())) {
+        if (epic != null && !epics.containsKey(epic.getId()) && validateStartTime(epic)) {
             epic.setStatus(TaskStatus.NEW);
             epic.setId(++taskIndex);
             epics.put(epic.getId(), epic);
@@ -116,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask) {
-        if (subtask != null && !subtasks.containsKey(subtask.getId()) && validateStartTime(subtask.getStartTime())) {
+        if (subtask != null && !subtasks.containsKey(subtask.getId()) && validateStartTime(subtask)) {
             if (epics.containsKey(subtask.getEpicId())) {
                 epics.get(subtask.getEpicId()).addSubtask(subtask);
                 subtask.setId(++taskIndex);
@@ -130,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (task != null && validateStartTime(task.getStartTime())) {
+        if (task != null && validateStartTime(task)) {
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
         }
@@ -138,7 +137,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epic != null && validateStartTime(epic.getStartTime())) {
+        if (epic != null && validateStartTime(epic)) {
             Epic oldEpic = epics.get(epic.getId());
             if (oldEpic.equals(epic)) {
                 oldEpic.setName(epic.getName());
@@ -150,7 +149,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtask != null && epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask.getStartTime())) {
+        if (subtask != null && epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask)) {
             subtasks.put(subtask.getId(), subtask);
             epics.get(subtask.getEpicId()).changeSubtask(subtask);
             prioritizedTasks.add(subtask);
@@ -202,10 +201,11 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(prioritizedTasks);
     }
 
-    //Если новая задача по времени начала ее выполнения раньше чем начало последней задачи в приоритетных, то возвращаем false
-    private boolean validateStartTime(LocalDateTime stateTime) {
-        if(getPrioritizedTasks().get(getPrioritizedTasks().size()).getStartTime().isAfter(stateTime)){
-            return false;
+    private boolean validateStartTime(Task task) {
+        for (Task t : getPrioritizedTasks()) {
+            if(t.getStartTime().isBefore(task.getStartTime()) && t.getEndTime().isAfter(t.getEndTime())) {
+                return false;
+            }
         }
         return true;
     }
