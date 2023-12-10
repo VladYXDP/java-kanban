@@ -9,8 +9,8 @@ public class Subtask extends Task {
 
     private int epicId;
 
-    public Subtask(String name, String description, int epicId, Duration duration) {
-        super(name, description, duration);
+    public Subtask(String name, String description, int epicId, LocalDateTime starTime, Duration duration) {
+        super(name, description, starTime, duration);
         this.epicId = epicId;
     }
 
@@ -45,7 +45,7 @@ public class Subtask extends Task {
 
     @Override
     public String taskToString() {
-        return String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s",getId(), TaskType.SUBTASK.name(), getName(), getStatus(),
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s", getId(), TaskType.SUBTASK.name(), getName(), getStatus(),
                 getDescription(), getEpicId(), startTime, duration, getEndTime());
     }
 

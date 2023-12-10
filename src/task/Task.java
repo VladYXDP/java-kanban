@@ -15,12 +15,12 @@ public class Task {
     protected Duration duration;
 
 
-    public Task(String name, String description, Duration duration) {
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
         this.duration = duration;
+        this.startTime = startTime;
         status = TaskStatus.NEW;
-        startTime = LocalDateTime.now();
     }
 
     public Task(String name, String description, int id, TaskStatus status, Duration duration) {

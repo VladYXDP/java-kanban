@@ -15,9 +15,9 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
         TaskManager fileManager = new FileBackedTasksManager(new File("task.csv"), null);
-        Task task = new Task("name", "desc", Duration.ofHours(12));
+        Task task = new Task("name", "desc", LocalDateTime.now(), Duration.ofHours(12));
         taskManager.createTask(task);
-        Task task1 = new Task("name1", "desc", Duration.ofHours(12));
+        Task task1 = new Task("name1", "desc", LocalDateTime.now(), Duration.ofHours(12));
         taskManager.createTask(task1);
         task1.setStartTime(LocalDateTime.parse("2023-12-09T18:44:06.456050"));
         taskManager.getPrioritizedTasks().forEach(System.out::println);
