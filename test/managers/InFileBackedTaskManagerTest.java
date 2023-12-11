@@ -1,3 +1,5 @@
+package managers;
+
 import manager.task.FileBackedTasksManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -96,10 +98,45 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
         removeTaskById(taskId);
         removeSubtaskById(subtaskId2);
-        Assertions.assertNull(getTask(taskId));
-        Assertions.assertNull(getSubtask(subtaskId2));
+        Assertions.assertNull(getTask(taskId), "Ошибка удаления задачи");
+        Assertions.assertNull(getSubtask(subtaskId2), "Ошибка удаления подзадачи");
         removeEpicById(epicId);
-        Assertions.assertNull(getEpic(epicId));
-        Assertions.assertNull(getSubtask(subtaskId1));
+        Assertions.assertNull(getEpic(epicId), "Ошибка удаления эпика");
+        Assertions.assertNull(getSubtask(subtaskId1), "Ошибка удаления подзадачи после удаления эпика");
+    }
+
+    @Test
+    public void checkSaveAndLoadFileWithoutTasks() {
+        File file = new File("checkSaveAndLoadWithoutTasks.csv");
+        setManager(new FileBackedTasksManager(file, null));
+        addNewTask(null);
+        addNewEpic(null);
+        addNewSubtask(null);
+        getTask(3);
+        getEpic(4);
+        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
+        fileManager.createTaskFromString();
+        Assertions.assertTrue(fileManager.getAllTask().isEmpty(), "Список задач должен быть пустым");
+        Assertions.assertTrue(fileManager.getAllEpic().isEmpty(), "Список эпиков должен быть пустым");
+        Assertions.assertTrue(fileManager.getAllSubtask().isEmpty(), "Список подзадач должен быть пустым");
+        Assertions.assertTrue(fileManager.getHistory().isEmpty(), "Список истории должен быть пустым");
+    }
+
+    @Test
+    public void checkSaveAndLoadFileWithOnlyEpics() {
+        File file = new File("checkSaveAndLoadWithOnlyEpics.csv");
+        setManager(new FileBackedTasksManager(file, null));
+        int epic1 = addNewEpic(new Epic("Epicname1", "Epicdesc1", LocalDateTime.parse("2024-01-02T18:44:06.456050")));
+        int epic2 = addNewEpic(new Epic("Epicname2", "Epicdesc2", LocalDateTime.parse("2024-01-03T18:44:06.456050")));
+        int epic3 = addNewEpic(new Epic("Epicname3", "Epicdesc3", LocalDateTime.parse("2024-01-04T18:44:06.456050")));
+        getEpic(epic1);
+        getEpic(epic2);
+        getEpic(epic3);
+        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
+        fileManager.createTaskFromString();
+        Assertions.assertNotNull(fileManager.getEpic(epic1), "Эпик не найден");
+        Assertions.assertNotNull(fileManager.getEpic(epic2),"Эпик не найден");
+        Assertions.assertNotNull(fileManager.getEpic(epic3), "Эпик не найден");
+        Assertions.assertEquals(fileManager.getHistory().size(), 3);
     }
 }

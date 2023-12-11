@@ -1,3 +1,5 @@
+package managers;
+
 import manager.task.InMemoryTaskManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -8,11 +10,13 @@ import task.TaskStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class InMemoryTaskTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     public void checkEpicAndSubtask() {
+        List<Integer> subtaskIds = List.of(2,3);
         setManager(new InMemoryTaskManager());
         int epicId = addNewEpic(new Epic("Epic Name", "Epic Desc", LocalDateTime.now()));
         Epic epic = getEpic(epicId);
@@ -23,6 +27,11 @@ public class InMemoryTaskTest extends TaskManagerTest<InMemoryTaskManager> {
                 Duration.ofHours(10)));
         int subtaskId2 = addNewSubtask(new Subtask("Subtask Name", "Subtask Desc", epicId,
                 LocalDateTime.parse("2023-12-20T18:44:06.456050"), Duration.ofHours(12)));
+
+        for(int i = 0; i < getSubtaskByEpic(epic).size(); i++) {
+            Assertions.assertTrue(subtaskIds.contains(getSubtaskByEpic(epic).get(i).getId()));
+        }
+
         Subtask subtask1 = getSubtask(subtaskId1);
         Subtask subtask2 = getSubtask(subtaskId2);
         Assertions.assertEquals(subtask1.getId(), subtaskId1);
@@ -57,7 +66,7 @@ public class InMemoryTaskTest extends TaskManagerTest<InMemoryTaskManager> {
 
 
         removeAllSubtask();
-        Assertions.assertTrue(getAllSubtask().isEmpty());
+        Assertions.assertTrue(getAllSubtask().isEmpty(), "Список подзадач должен быть пустым");
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус Эпика");
         Assertions.assertTrue(epic.getSubtasks().isEmpty(), "Список подзадач Эпика не пустой");
     }

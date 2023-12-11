@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private final List<String> loadedStringTasks;
 
     public static void main(String[] args) {
-        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("task.csv"));
+        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("1.csv"));
         fileBackedTasksManager.createTaskFromString();
     }
 
@@ -76,7 +76,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Epic getEpic(int id) {
-        Epic epic = super.getEpic(id);;
+        Epic epic = super.getEpic(id);
         save();
         return epic;
     }
@@ -157,9 +157,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             br.readLine();
             while (br.ready()) {
                 String line = br.readLine();
-                if (!line.isBlank()) {
-                    loadedStringTasks.add(line);
-                }
+                loadedStringTasks.add(line);
             }
         } catch (IOException e) {
             throw new ManagerLoadException(e.getMessage());
@@ -167,27 +165,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return new FileBackedTasksManager(file, loadedStringTasks);
     }
 
-    private void createTaskFromString() {
-        for (int i = 0; i < loadedStringTasks.size() - 1; i++) {
-            String[] taskStrSplit = loadedStringTasks.get(i).split(",");
-            int id = Integer.parseInt(taskStrSplit[0]);
-            String name = taskStrSplit[2];
-            TaskStatus status = TaskStatus.getTaskStatusByString(taskStrSplit[3]);
-            String desc = taskStrSplit[4];
-            String startTime = taskStrSplit[5];
-            String duration = taskStrSplit[6];
-            String endTime = taskStrSplit[7];
-            if (TASK.name().equals(taskStrSplit[1])) {
-                addTask(new Task(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration)));
-            } else if (TaskType.EPIC.name().equals(taskStrSplit[1])) {
-                addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration),
-                        LocalDateTime.parse(endTime)));
-            } else {
-                addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5]), LocalDateTime.parse(startTime),
-                        Duration.parse(duration)));
+    public void createTaskFromString() {
+        if (loadedStringTasks.size() > 1) {
+            for (int i = 0; i < loadedStringTasks.size() - 2; i++) {
+                String[] taskStrSplit = loadedStringTasks.get(i).split(",");
+                int id = Integer.parseInt(taskStrSplit[0]);
+                String name = taskStrSplit[2];
+                TaskStatus status = TaskStatus.getTaskStatusByString(taskStrSplit[3]);
+                String desc = taskStrSplit[4];
+                String startTime = taskStrSplit[5];
+                String duration = taskStrSplit[6];
+                String endTime = taskStrSplit[7];
+                if (TASK.name().equals(taskStrSplit[1])) {
+                    addTask(new Task(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration)));
+                } else if (TaskType.EPIC.name().equals(taskStrSplit[1])) {
+                    if (endTime.equals("null")) {
+                        addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.ofHours(0)));
+                    } else {
+                        addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration),
+                                LocalDateTime.parse(endTime)));
+                    }
+                } else {
+                    addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5]), LocalDateTime.parse(startTime),
+                            Duration.parse(duration)));
+                }
+            }
+            if (loadedStringTasks.get(loadedStringTasks.size() - 1).isEmpty()) {
+                loadHistory(historyFromString(loadedStringTasks));
             }
         }
-        loadHistory(historyFromString(loadedStringTasks));
     }
 
     private static String historyToString(List<Task> historyTasks) {
