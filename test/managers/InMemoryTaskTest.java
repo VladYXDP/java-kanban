@@ -55,8 +55,8 @@ public class InMemoryTaskTest extends TaskManagerTest<InMemoryTaskManager> {
 
         subtask1.setStatus(TaskStatus.IN_PROGRESS);
         subtask2.setStatus(TaskStatus.IN_PROGRESS);
-        updateTask(subtask1);
-        updateTask(subtask2);
+        updateSubtask(subtask1);
+        updateSubtask(subtask2);
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
         Assertions.assertEquals(getSubtask(subtaskId1).getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Не обновляется подзадача");
 

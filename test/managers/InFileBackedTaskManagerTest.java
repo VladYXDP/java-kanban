@@ -16,7 +16,7 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
     @Test
     public void checkEpicAndSubtask() {
-        setManager(FileBackedTasksManager.loadFromFile(new File("1.csv")));
+        setManager(new FileBackedTasksManager(new File("checkEpicAndSubtask.csv"), null));
         int epicId = addNewEpic(new Epic("Epic Name", "Epic Desc", LocalDateTime.now()));
         Epic epic = getEpic(epicId);
         Assertions.assertEquals(epic.getId(), epicId, "Разные индексы");
@@ -49,8 +49,8 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
         subtask1.setStatus(TaskStatus.IN_PROGRESS);
         subtask2.setStatus(TaskStatus.IN_PROGRESS);
-        updateTask(subtask1);
-        updateTask(subtask2);
+        updateSubtask(subtask1);
+        updateSubtask(subtask2);
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
         Assertions.assertEquals(getSubtask(subtaskId1).getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Не обновляется подзадача");
 
@@ -85,7 +85,7 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
     @Test
     public void checkRemovingById() {
-        setManager(new FileBackedTasksManager(new File("1.csv"), null));
+        setManager(new FileBackedTasksManager(new File("checkRemovingById.csv"), null));
         int taskId = addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.now(), Duration.ofHours(5)));
         addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.parse("2023-12-30T18:44:06.456050"),
                 Duration.ofHours(1)));
