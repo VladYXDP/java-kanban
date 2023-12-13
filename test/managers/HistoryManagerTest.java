@@ -2,8 +2,8 @@ package managers;
 
 import manager.Managers;
 import manager.history.HistoryManager;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import task.Task;
 import task.TaskStatus;
 

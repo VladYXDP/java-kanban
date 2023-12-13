@@ -1,12 +1,11 @@
 package managers;
 
 import manager.task.FileBackedTasksManager;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import task.Epic;
 import task.Subtask;
 import task.Task;
-import task.TaskStatus;
 
 import java.io.File;
 import java.time.Duration;
@@ -14,129 +13,88 @@ import java.time.LocalDateTime;
 
 public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-    @Test
-    public void checkEpicAndSubtask() {
-        setManager(new FileBackedTasksManager(new File("checkEpicAndSubtask.csv"), null));
-        int epicId = addNewEpic(new Epic("Epic Name", "Epic Desc", LocalDateTime.now()));
-        Epic epic = getEpic(epicId);
-        Assertions.assertEquals(epic.getId(), epicId, "Разные индексы");
-        Assertions.assertEquals(getAllEpic().size(), 1, "Неверно заполняется список Эпиков");
+    @BeforeAll
+    public static void createTaskInFile() {
+        FileBackedTasksManager fileManager = new FileBackedTasksManager(new File("tasksSave.csv"), null);
+        Task task1 = new Task("Task name1", "Task desc1"
+                , LocalDateTime.parse("2023-12-30T18:44:06.456050"), Duration.ofHours(8));
+        Task task2 = new Task("Task name2", "Task desc2"
+                , LocalDateTime.parse("2023-12-31T18:44:06.456050"), Duration.ofHours(8));
+        Task task3 = new Task("Task name3", "Task desc3"
+                , LocalDateTime.parse("2024-01-01T18:44:06.456050"), Duration.ofHours(8));
 
-        int subtaskId1 = addNewSubtask(new Subtask("Subtask Name", "Subtask Desc", epicId, LocalDateTime.now(),
-                Duration.ofHours(10)));
-        int subtaskId2 = addNewSubtask(new Subtask("Subtask Name", "Subtask Desc", epicId,
-                LocalDateTime.parse("2023-12-20T18:44:06.456050"), Duration.ofHours(12)));
-        Subtask subtask1 = getSubtask(subtaskId1);
-        Subtask subtask2 = getSubtask(subtaskId2);
-        Assertions.assertEquals(subtask1.getId(), subtaskId1);
-        Assertions.assertEquals(subtask1.getEpicId(), epicId);
-        Assertions.assertEquals(subtask2.getId(), subtaskId2);
-        Assertions.assertEquals(subtask2.getEpicId(), epicId);
-        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус Эпика");
-        Assertions.assertEquals(getEpic(epicId).getSubtasks().size(), 2, "Неверно заполняется список подзадач Эпика");
-        Assertions.assertEquals(getAllSubtask().size(), 2, "Неверно заполняется список подзадач");
+        Epic epic1 = new Epic("Epic Name1", "Epic Desc1", LocalDateTime.parse("2024-01-04T18:44:06.456050"));
+        Epic epic2 = new Epic("Epic Name2", "Epic Desc2", LocalDateTime.parse("2024-01-05T18:44:06.456050"));
+        Epic epic3 = new Epic("Epic Name3", "Epic Desc3", LocalDateTime.parse("2024-01-06T18:44:06.456050"));
 
-        subtask1.setStatus(TaskStatus.DONE);
-        subtask2.setStatus(TaskStatus.DONE);
-        updateSubtask(getSubtask(subtaskId1));
-        updateSubtask(getSubtask(subtaskId2));
+        Subtask subtask1 = new Subtask("Subtask Name1", "Subtask Desc1", 4, LocalDateTime.parse("2024-01-07T18:44:06.456050"),
+                Duration.ofHours(10));
+        Subtask subtask2 = new Subtask("Subtask Name2", "Subtask Desc2", 4, LocalDateTime.parse("2024-01-08T18:44:06.456050"),
+                Duration.ofHours(10));
+        Subtask subtask3 = new Subtask("Subtask Name3", "Subtask Desc3", 4, LocalDateTime.parse("2024-01-09T18:44:06.456050"),
+                Duration.ofHours(10));
+        Subtask subtask4 = new Subtask("Subtask Name4", "Subtask Desc4", 5, LocalDateTime.parse("2024-01-10T18:44:06.456050"),
+                Duration.ofHours(10));
+        Subtask subtask5 = new Subtask("Subtask Name5", "Subtask Desc5", 6, LocalDateTime.parse("2024-01-11T18:44:06.456050"),
+                Duration.ofHours(10));
 
-        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.DONE.name(), "Неверный статус Эпика");
-
-        subtask1.setStatus(TaskStatus.NEW);
-        updateSubtask(subtask1);
-        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
-
-        subtask1.setStatus(TaskStatus.IN_PROGRESS);
-        subtask2.setStatus(TaskStatus.IN_PROGRESS);
-        updateSubtask(subtask1);
-        updateSubtask(subtask2);
-        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
-        Assertions.assertEquals(getSubtask(subtaskId1).getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Не обновляется подзадача");
-
-        epic.setName("New name");
-        updateEpic(epic);
-        Assertions.assertEquals(getEpic(epicId).getName(), "New name", "Не обновляется Эпик");
-
-
-        removeAllSubtask();
-        Assertions.assertTrue(getAllSubtask().isEmpty());
-        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус Эпика");
-        Assertions.assertTrue(epic.getSubtasks().isEmpty(), "Список подзадач Эпика не пустой");
+        fileManager.createTask(task1);
+        fileManager.createTask(task2);
+        fileManager.createTask(task3);
+        fileManager.createEpic(epic1);
+        fileManager.createEpic(epic2);
+        fileManager.createEpic(epic3);
+        fileManager.createSubtask(subtask1);
+        fileManager.createSubtask(subtask2);
+        fileManager.createSubtask(subtask3);
+        fileManager.createSubtask(subtask4);
+        fileManager.createSubtask(subtask5);
     }
 
-    @Test
-    public void checkTask() {
-        setManager(new FileBackedTasksManager(new File("1.csv"), null));
-        int globalTaskId = addNewTask(new Task("Task name", "Task desc", LocalDateTime.now(),
-                Duration.ofHours(8)));
-        Task task = getTask(globalTaskId);
-        Assertions.assertEquals(task.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус задачи");
-        Assertions.assertEquals(task.getId(), globalTaskId, "Ошибка создания задачи");
-        Assertions.assertEquals(getAllTask().size(), 1, "Список задач не равен 1");
+    @BeforeEach
+    public void initSave() {
+        manager = new FileBackedTasksManager(new File("tasks.csv"), null);
 
-        task.setStatus(TaskStatus.DONE);
-        updateTask(task);
-        Task updateTask = getTask(globalTaskId);
-        Assertions.assertEquals(updateTask.getStatus().name(), TaskStatus.DONE.name(), "Задача не обновляется");
-        removeAllTask();
-        Assertions.assertTrue(getAllTask().isEmpty(), "Не пустой список задач после удаления");
+        task1 = new Task("Task name1", "Task desc1"
+                , LocalDateTime.parse("2023-12-30T18:44:06.456050"), Duration.ofHours(8));
+        task2 = new Task("Task name2", "Task desc2"
+                , LocalDateTime.parse("2023-12-31T18:44:06.456050"), Duration.ofHours(8));
+        task3 = new Task("Task name3", "Task desc3"
+                , LocalDateTime.parse("2024-01-01T18:44:06.456050"), Duration.ofHours(8));
+        task4 = new Task("Task name4", "Task desc4"
+                , LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(8));
+
+        epic1 = new Epic("Epic Name1", "Epic Desc1", LocalDateTime.parse("2024-01-04T18:44:06.456050"));
+        epic2 = new Epic("Epic Name2", "Epic Desc2", LocalDateTime.parse("2024-01-05T18:44:06.456050"));
+        epic3 = new Epic("Epic Name3", "Epic Desc3", LocalDateTime.parse("2024-01-06T18:44:06.456050"));
+
+        subtask1 = new Subtask("Subtask Name1", "Subtask Desc1", 4, LocalDateTime.parse("2024-01-07T18:44:06.456050"),
+                Duration.ofHours(10));
+        subtask2 = new Subtask("Subtask Name2", "Subtask Desc2", 4, LocalDateTime.parse("2024-01-08T18:44:06.456050"),
+                Duration.ofHours(10));
+        subtask3 = new Subtask("Subtask Name3", "Subtask Desc3", 4, LocalDateTime.parse("2024-01-09T18:44:06.456050"),
+                Duration.ofHours(10));
+        subtask4 = new Subtask("Subtask Name4", "Subtask Desc4", 5, LocalDateTime.parse("2024-01-10T18:44:06.456050"),
+                Duration.ofHours(10));
+        subtask5 = new Subtask("Subtask Name5", "Subtask Desc5", 6, LocalDateTime.parse("2024-01-11T18:44:06.456050"),
+                Duration.ofHours(10));
+
+        manager.createTask(task1);
+        manager.createTask(task2);
+        manager.createTask(task3);
+        manager.createEpic(epic1);
+        manager.createEpic(epic2);
+        manager.createEpic(epic3);
+        manager.createSubtask(subtask1);
+        manager.createSubtask(subtask2);
+        manager.createSubtask(subtask3);
+        manager.createSubtask(subtask4);
+        manager.createSubtask(subtask5);
     }
 
-    @Test
-    public void checkRemovingById() {
-        setManager(new FileBackedTasksManager(new File("checkRemovingById.csv"), null));
-        int taskId = addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.now(), Duration.ofHours(5)));
-        addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.parse("2023-12-30T18:44:06.456050"),
-                Duration.ofHours(1)));
-        int epicId = addNewEpic(new Epic("Epic Name", "Epic desc",
-                LocalDateTime.parse("2024-01-02T18:44:06.456050")));
-        int subtaskId1 = addNewSubtask(new Subtask("Subtask name", "Subtask desc", epicId,
-                LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(2)));
-        int subtaskId2 = addNewSubtask(new Subtask("Subtask name", "Subtask desc", epicId,
-                LocalDateTime.parse("2024-01-03T18:44:06.456050"), Duration.ofHours(2)));
-
-        removeTaskById(taskId);
-        removeSubtaskById(subtaskId2);
-        Assertions.assertNull(getTask(taskId), "Ошибка удаления задачи");
-        Assertions.assertNull(getSubtask(subtaskId2), "Ошибка удаления подзадачи");
-        removeEpicById(epicId);
-        Assertions.assertNull(getEpic(epicId), "Ошибка удаления эпика");
-        Assertions.assertNull(getSubtask(subtaskId1), "Ошибка удаления подзадачи после удаления эпика");
-    }
-
-    @Test
-    public void checkSaveAndLoadFileWithoutTasks() {
-        File file = new File("checkSaveAndLoadWithoutTasks.csv");
-        setManager(new FileBackedTasksManager(file, null));
-        addNewTask(null);
-        addNewEpic(null);
-        addNewSubtask(null);
-        getTask(3);
-        getEpic(4);
-        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
-        fileManager.createTaskFromString();
-        Assertions.assertTrue(fileManager.getAllTask().isEmpty(), "Список задач должен быть пустым");
-        Assertions.assertTrue(fileManager.getAllEpic().isEmpty(), "Список эпиков должен быть пустым");
-        Assertions.assertTrue(fileManager.getAllSubtask().isEmpty(), "Список подзадач должен быть пустым");
-        Assertions.assertTrue(fileManager.getHistory().isEmpty(), "Список истории должен быть пустым");
-    }
-
-    @Test
-    public void checkSaveAndLoadFileWithOnlyEpics() {
-        File file = new File("checkSaveAndLoadWithOnlyEpics.csv");
-        setManager(new FileBackedTasksManager(file, null));
-        int epic1 = addNewEpic(new Epic("Epicname1", "Epicdesc1", LocalDateTime.parse("2024-01-02T18:44:06.456050")));
-        int epic2 = addNewEpic(new Epic("Epicname2", "Epicdesc2", LocalDateTime.parse("2024-01-03T18:44:06.456050")));
-        int epic3 = addNewEpic(new Epic("Epicname3", "Epicdesc3", LocalDateTime.parse("2024-01-04T18:44:06.456050")));
-        getEpic(epic1);
-        getEpic(epic2);
-        getEpic(epic3);
-        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
-        fileManager.createTaskFromString();
-        Assertions.assertNotNull(fileManager.getEpic(epic1), "Эпик не найден");
-        Assertions.assertNotNull(fileManager.getEpic(epic2),"Эпик не найден");
-        Assertions.assertNotNull(fileManager.getEpic(epic3), "Эпик не найден");
-        Assertions.assertEquals(fileManager.getHistory().size(), 3);
-    }
+//    @AfterEach
+//    public void initLoad() {
+//        manager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+//        manager.createTaskFromString();
+//    }
 }
