@@ -167,29 +167,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public void createTaskFromString() {
         if (loadedStringTasks.size() > 1) {
-            for (int i = 0; i < loadedStringTasks.size() - 2; i++) {
+            for (int i = 0; i < loadedStringTasks.size() - 1; i++) {
                 String[] taskStrSplit = loadedStringTasks.get(i).split(",");
-                int id = Integer.parseInt(taskStrSplit[0]);
-                String name = taskStrSplit[2];
-                TaskStatus status = TaskStatus.getTaskStatusByString(taskStrSplit[3]);
-                String desc = taskStrSplit[4];
-                String startTime = taskStrSplit[5];
-                String startTimeSubtask = taskStrSplit[6];
-                String duration = taskStrSplit[6];
-                String durationSubtask = taskStrSplit[7];
-                String endTime = taskStrSplit[7];
-                if (TASK.name().equals(taskStrSplit[1])) {
-                    addTask(new Task(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration)));
-                } else if (TaskType.EPIC.name().equals(taskStrSplit[1])) {
-                    if (endTime.equals("null")) {
-                        addEpic(new Epic(name, desc, id, status));
+                if (!taskStrSplit[0].isEmpty()) {
+                    int id = Integer.parseInt(taskStrSplit[0]);
+                    String name = taskStrSplit[2];
+                    TaskStatus status = TaskStatus.getTaskStatusByString(taskStrSplit[3]);
+                    String desc = taskStrSplit[4];
+                    String startTime = taskStrSplit[5];
+                    String startTimeSubtask = taskStrSplit[6];
+                    String duration = taskStrSplit[6];
+                    String durationSubtask = taskStrSplit[7];
+                    String endTime = taskStrSplit[7];
+                    if (TASK.name().equals(taskStrSplit[1])) {
+                        addTask(new Task(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration)));
+                    } else if (TaskType.EPIC.name().equals(taskStrSplit[1])) {
+                        if (endTime.equals("null")) {
+                            addEpic(new Epic(name, desc, id, status));
+                        } else {
+                            addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration),
+                                    LocalDateTime.parse(endTime)));
+                        }
                     } else {
-                        addEpic(new Epic(name, desc, id, status, LocalDateTime.parse(startTime), Duration.parse(duration),
-                                LocalDateTime.parse(endTime)));
+                        addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5]), LocalDateTime.parse(startTimeSubtask),
+                                Duration.parse(durationSubtask)));
                     }
-                } else {
-                    addSubtask(new Subtask(name, desc, id, status, Integer.parseInt(taskStrSplit[5]), LocalDateTime.parse(startTimeSubtask),
-                            Duration.parse(durationSubtask)));
                 }
             }
             if (!loadedStringTasks.get(loadedStringTasks.size() - 1).isEmpty()) {

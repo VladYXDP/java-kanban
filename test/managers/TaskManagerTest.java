@@ -133,10 +133,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createTask(task1);
         Task task = manager.getTask(task1.getId());
         Assertions.assertEquals(task.getId(), task1.getId());
+        Assertions.assertEquals(manager.getHistory().size(), 1);
         if (manager instanceof FileBackedTasksManager) {
             fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
             fileManager.createTaskFromString();
             Assertions.assertEquals(fileManager.getTask(task.getId()).getId(), task.getId());
+            Assertions.assertEquals(manager.getHistory().size(), 1);
         }
     }
 
@@ -145,11 +147,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         Epic epic = manager.getEpic(epic1.getId());
+        Assertions.assertEquals(manager.getHistory().size(), 1);
         Assertions.assertEquals(epic.getId(), epic1.getId());
         if (manager instanceof FileBackedTasksManager) {
             fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
             fileManager.createTaskFromString();
             Assertions.assertEquals(fileManager.getEpic(epic.getId()).getId(), epic.getId());
+            Assertions.assertEquals(manager.getHistory().size(), 1);
         }
     }
 
@@ -159,6 +163,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         Subtask subtask = manager.getSubtask(subtask1.getId());
+        Assertions.assertEquals(manager.getHistory().size(), 1);
         Assertions.assertEquals(subtask.getId(), subtask1.getId());
 
         RuntimeException ex = Assertions.assertThrows(
@@ -170,6 +175,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
             fileManager.createTaskFromString();
             Assertions.assertEquals(fileManager.getSubtask(subtask.getId()).getId(), subtask.getId());
+            Assertions.assertEquals(manager.getHistory().size(), 1);
         }
     }
 
@@ -233,6 +239,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.DONE.name());
         sub1.setStatus(TaskStatus.NEW);
         manager.updateSubtask(sub1);
+        Assertions.assertEquals(manager.getHistory().size(), 4);
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
         if (manager instanceof FileBackedTasksManager) {
             fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
@@ -241,6 +248,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             Assertions.assertEquals(epic.getName(), "update name");
             Assertions.assertEquals(epic.getDescription(), "update desc");
             Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
+            Assertions.assertEquals(manager.getHistory().size(), 4);
         }
     }
 
@@ -334,130 +342,4 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             }
         }
     }
-
-//    @Test
-//    public void checkEpicAndSubtask() {
-//        manager.createEpic(epic1);
-//        Epic epic = manager.getEpic(epic1.getId());
-//        Assertions.assertEquals(epic.getId(), 1, "Разные индексы");
-//        Assertions.assertEquals(manager.getAllEpic().size(), 1, "Неверно заполняется список Эпиков");
-//
-//        manager.createSubtask(subtask1);
-//        manager.createSubtask(subtask2);
-//        Subtask sub1 = manager.getSubtask(subtask1.getId());
-//        Subtask sub2 = manager.getSubtask(subtask2.getId());
-//        Assertions.assertEquals(subtask1.getId(), sub1.getId());
-//        Assertions.assertEquals(subtask1.getEpicId(), epic1.getId());
-//        Assertions.assertEquals(subtask2.getId(), sub2.getId());
-//        Assertions.assertEquals(subtask2.getEpicId(), epic1.getId());
-//        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус Эпика");
-//        Assertions.assertEquals(manager.getEpic(epic1.getId()).getSubtasks().size(), 2, "Неверно заполняется список подзадач Эпика");
-//        Assertions.assertEquals(manager.getAllSubtask().size(), 2, "Неверно заполняется список подзадач");
-//
-//        sub1.setStatus(TaskStatus.DONE);
-//        sub2.setStatus(TaskStatus.DONE);
-//        manager.updateSubtask(manager.getSubtask(sub1.getId()));
-//        manager.updateSubtask(manager.getSubtask(sub2.getId()));
-//
-//        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.DONE.name(), "Неверный статус Эпика");
-//
-//        subtask1.setStatus(TaskStatus.NEW);
-//        updateSubtask(subtask1);
-//        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
-//
-//        subtask1.setStatus(TaskStatus.IN_PROGRESS);
-//        subtask2.setStatus(TaskStatus.IN_PROGRESS);
-//        updateTask(subtask1);
-//        updateTask(subtask2);
-//        updateSubtask(subtask1);
-//        updateSubtask(subtask2);
-//        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Неверный статус Эпика");
-//        Assertions.assertEquals(getSubtask(subtaskId1).getStatus().name(), TaskStatus.IN_PROGRESS.name(), "Не обновляется подзадача");
-//
-//        epic.setName("New name");
-//        updateEpic(epic);
-//        Assertions.assertEquals(getEpic(epicId).getName(), "New name", "Не обновляется Эпик");
-//
-//
-//        removeAllSubtask();
-//        Assertions.assertTrue(getAllSubtask().isEmpty());
-//        Assertions.assertEquals(epic.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус Эпика");
-//        Assertions.assertTrue(epic.getSubtasks().isEmpty(), "Список подзадач Эпика не пустой");
-//    }
-//
-//    @Test
-//    public void checkTask() {
-//        setManager(new FileBackedTasksManager(new File("1.csv"), null));
-//        int globalTaskId = addNewTask(new Task("Task name", "Task desc", LocalDateTime.now(),
-//                Duration.ofHours(8)));
-//        Task task = getTask(globalTaskId);
-//        Assertions.assertEquals(task.getStatus().name(), TaskStatus.NEW.name(), "Неверный статус задачи");
-//        Assertions.assertEquals(task.getId(), globalTaskId, "Ошибка создания задачи");
-//        Assertions.assertEquals(getAllTask().size(), 1, "Список задач не равен 1");
-//
-//        task.setStatus(TaskStatus.DONE);
-//        updateTask(task);
-//        Task updateTask = getTask(globalTaskId);
-//        Assertions.assertEquals(updateTask.getStatus().name(), TaskStatus.DONE.name(), "Задача не обновляется");
-//        removeAllTask();
-//        Assertions.assertTrue(getAllTask().isEmpty(), "Не пустой список задач после удаления");
-//    }
-//
-//    @Test
-//    public void checkRemovingById() {
-//        setManager(new FileBackedTasksManager(new File("1.csv"), null));
-//        setManager(new FileBackedTasksManager(new File("checkRemovingById.csv"), null));
-//        int taskId = addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.now(), Duration.ofHours(5)));
-//        addNewTask(new Task("TaskName", "TaskDesc", LocalDateTime.parse("2023-12-30T18:44:06.456050"),
-//                Duration.ofHours(1)));
-//        int epicId = addNewEpic(new Epic("Epic Name", "Epic desc",
-//                LocalDateTime.parse("2024-01-02T18:44:06.456050")));
-//        int subtaskId1 = addNewSubtask(new Subtask("Subtask name", "Subtask desc", epicId,
-//                LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(2)));
-//        int subtaskId2 = addNewSubtask(new Subtask("Subtask name", "Subtask desc", epicId,
-//                LocalDateTime.parse("2024-01-03T18:44:06.456050"), Duration.ofHours(2)));
-//
-//        removeTaskById(taskId);
-//        removeSubtaskById(subtaskId2);
-//        Assertions.assertNull(getTask(taskId), "Ошибка удаления задачи");
-//        Assertions.assertNull(getSubtask(subtaskId2), "Ошибка удаления подзадачи");
-//        removeEpicById(epicId);
-//        Assertions.assertNull(getEpic(epicId), "Ошибка удаления эпика");
-//        Assertions.assertNull(getSubtask(subtaskId1), "Ошибка удаления подзадачи после удаления эпика");
-//    }
-//
-//    @Test
-//    public void checkSaveAndLoadFileWithoutTasks() {
-//        File file = new File("checkSaveAndLoadWithoutTasks.csv");
-//        setManager(new FileBackedTasksManager(file, null));
-//        addNewTask(null);
-//        addNewEpic(null);
-//        addNewSubtask(null);
-//        getTask(3);
-//        getEpic(4);
-//        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
-//        fileManager.createTaskFromString();
-//        Assertions.assertTrue(fileManager.getAllTask().isEmpty(), "Список задач должен быть пустым");
-//        Assertions.assertTrue(fileManager.getAllEpic().isEmpty(), "Список эпиков должен быть пустым");
-//        Assertions.assertTrue(fileManager.getAllSubtask().isEmpty(), "Список подзадач должен быть пустым");
-//        Assertions.assertTrue(fileManager.getHistory().isEmpty(), "Список истории должен быть пустым");
-//    }
-//
-//    @Test
-//    public void checkSaveAndLoadFileWithOnlyEpics() {
-//        File file = new File("checkSaveAndLoadWithOnlyEpics.csv");
-//        setManager(new FileBackedTasksManager(file, null));
-//        int epic1 = addNewEpic(new Epic("Epicname1", "Epicdesc1", LocalDateTime.parse("2024-01-02T18:44:06.456050")));
-//        int epic2 = addNewEpic(new Epic("Epicname2", "Epicdesc2", LocalDateTime.parse("2024-01-03T18:44:06.456050")));
-//        int epic3 = addNewEpic(new Epic("Epicname3", "Epicdesc3", LocalDateTime.parse("2024-01-04T18:44:06.456050")));
-//        getEpic(epic1);
-//        getEpic(epic2);
-//        getEpic(epic3);
-//        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(file);
-//        fileManager.createTaskFromString();
-//        Assertions.assertNotNull(fileManager.getEpic(epic1), "Эпик не найден");
-//        Assertions.assertNotNull(fileManager.getEpic(epic2),"Эпик не найден");
-//        Assertions.assertNotNull(fileManager.getEpic(epic3), "Эпик не найден");
-//        Assertions.assertEquals(fileManager.getHistory().size(), 3);
-//    }
 }
