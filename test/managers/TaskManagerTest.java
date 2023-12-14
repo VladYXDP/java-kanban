@@ -39,7 +39,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createTask(task3);
         manager.createTask(task4);
         Assertions.assertEquals(manager.getAllTask().size(), 4);
-        if(manager instanceof FileBackedTasksManager) {
+        if (manager instanceof FileBackedTasksManager) {
             fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
             fileManager.createTaskFromString();
             Assertions.assertEquals(fileManager.getAllTask().size(), 4);
@@ -48,32 +48,51 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getAllEpicTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createEpic(epic2);
         manager.createEpic(epic3);
         Assertions.assertEquals(manager.getAllEpic().size(), 3);
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertEquals(fileManager.getAllEpic().size(), 3);
+        }
     }
 
     @Test
     public void getAllSubtaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createSubtask(subtask3);
         Assertions.assertEquals(manager.getAllSubtask().size(), 3);
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertEquals(fileManager.getAllSubtask().size(), 3);
+        }
     }
 
     @Test
     public void removeAllTaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createTask(task1);
         manager.createTask(task2);
         manager.createTask(task3);
         manager.removeAllTask();
         Assertions.assertTrue(manager.getAllTask().isEmpty());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertTrue(fileManager.getAllTask().isEmpty());
+        }
     }
 
     @Test
     public void removeAllEpicTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createEpic(epic2);
         manager.createEpic(epic3);
@@ -83,10 +102,17 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.removeAllEpic();
         Assertions.assertTrue(manager.getAllEpic().isEmpty());
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertTrue(fileManager.getAllEpic().isEmpty());
+            Assertions.assertTrue(fileManager.getAllSubtask().isEmpty());
+        }
     }
 
     @Test
     public void removeAllSubtaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
@@ -94,24 +120,42 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.removeAllSubtask();
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
         Assertions.assertTrue(manager.getEpic(1).getSubtasks().isEmpty());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertTrue(fileManager.getAllSubtask().isEmpty());
+        }
     }
 
     @Test
     public void getTaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createTask(task1);
         Task task = manager.getTask(task1.getId());
         Assertions.assertEquals(task.getId(), task1.getId());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertEquals(fileManager.getTask(task.getId()).getId(), task.getId());
+        }
     }
 
     @Test
     public void getEpicTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertEquals(epic.getId(), epic1.getId());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertEquals(fileManager.getEpic(epic.getId()).getId(), epic.getId());
+        }
     }
 
     @Test
     public void getSubtaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         Subtask subtask = manager.getSubtask(subtask1.getId());
@@ -122,10 +166,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 () -> manager.createSubtask(subtask4)
         );
         Assertions.assertEquals(ex.getMessage(), "Отсутствует Эпик для подзадачи.");
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertEquals(fileManager.getSubtask(subtask.getId()).getId(), subtask.getId());
+        }
     }
 
     @Test
     public void updateTaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createTask(task1);
         Task task = manager.getTask(task1.getId());
         task.setStatus(TaskStatus.IN_PROGRESS);
@@ -136,10 +186,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(task.getStatus().name(), TaskStatus.IN_PROGRESS.name());
         Assertions.assertEquals(task.getName(), "update name");
         Assertions.assertEquals(task.getDescription(), "update desc");
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            task = fileManager.getTask(task.getId());
+            Assertions.assertEquals(task.getName(), "update name");
+            Assertions.assertEquals(task.getDescription(), "update desc");
+        }
     }
 
     @Test
     public void updateEpicTest() {
+        FileBackedTasksManager fileManager;
         List<Integer> subtaskIds = List.of(2, 3, 4);
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
@@ -176,10 +234,19 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         sub1.setStatus(TaskStatus.NEW);
         manager.updateSubtask(sub1);
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            epic = fileManager.getEpic(epic.getId());
+            Assertions.assertEquals(epic.getName(), "update name");
+            Assertions.assertEquals(epic.getDescription(), "update desc");
+            Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
+        }
     }
 
     @Test
     public void updateSubtaskTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         Subtask sub1 = manager.getSubtask(subtask1.getId());
@@ -189,23 +256,45 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         sub1 = manager.getSubtask(subtask1.getId());
         Assertions.assertEquals(sub1.getName(), "update name");
         Assertions.assertEquals(sub1.getDescription(), "update desc");
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            sub1 = fileManager.getSubtask(sub1.getId());
+            Assertions.assertEquals(sub1.getName(), "update name");
+            Assertions.assertEquals(sub1.getDescription(), "update desc");
+        }
     }
 
     @Test
     public void removeTaskByIdTest() {
+        FileBackedTasksManager fileManager;
         manager.createTask(task1);
-        manager.removeTaskById(task1.getId());
+        Task task = manager.getTask(1);
+        manager.removeTaskById(task.getId());
         Assertions.assertNull(manager.getTask(task1.getId()));
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertNull(fileManager.getTask(task.getId()));
+        }
     }
 
     @Test
     public void removeEpicByIdTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.removeEpicById(epic1.getId());
+        Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertNull(manager.getEpic(epic1.getId()));
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertNull(fileManager.getEpic(epic.getId()));
+            Assertions.assertTrue(fileManager.getAllSubtask().isEmpty());
+        }
     }
 
 
@@ -221,7 +310,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getSubtaskByEpicTest() {
-        List<Integer> subtaskIds = List.of(subtask1.getId(),subtask2.getId());
+        List<Integer> subtaskIds = List.of(subtask1.getId(), subtask2.getId());
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);

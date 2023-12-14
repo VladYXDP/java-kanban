@@ -55,7 +55,8 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
     @BeforeEach
     public void initSave() {
         manager = new FileBackedTasksManager(new File("tasks.csv"), null);
-
+        manager.removeAllTask();
+        manager.removeAllEpic();
         task1 = new Task("Task name1", "Task desc1"
                 , LocalDateTime.parse("2023-12-30T18:44:06.456050"), Duration.ofHours(8));
         task2 = new Task("Task name2", "Task desc2"
@@ -69,15 +70,15 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
         epic2 = new Epic("Epic Name2", "Epic Desc2", LocalDateTime.parse("2024-01-05T18:44:06.456050"));
         epic3 = new Epic("Epic Name3", "Epic Desc3", LocalDateTime.parse("2024-01-06T18:44:06.456050"));
 
-        subtask1 = new Subtask("Subtask Name1", "Subtask Desc1", 4, LocalDateTime.parse("2024-01-07T18:44:06.456050"),
+        subtask1 = new Subtask("Subtask Name1", "Subtask Desc1", 1, LocalDateTime.parse("2024-01-07T18:44:06.456050"),
                 Duration.ofHours(10));
-        subtask2 = new Subtask("Subtask Name2", "Subtask Desc2", 4, LocalDateTime.parse("2024-01-08T18:44:06.456050"),
+        subtask2 = new Subtask("Subtask Name2", "Subtask Desc2", 1, LocalDateTime.parse("2024-01-08T18:44:06.456050"),
                 Duration.ofHours(10));
-        subtask3 = new Subtask("Subtask Name3", "Subtask Desc3", 4, LocalDateTime.parse("2024-01-09T18:44:06.456050"),
+        subtask3 = new Subtask("Subtask Name3", "Subtask Desc3", 1, LocalDateTime.parse("2024-01-09T18:44:06.456050"),
                 Duration.ofHours(10));
-        subtask4 = new Subtask("Subtask Name4", "Subtask Desc4", 5, LocalDateTime.parse("2024-01-10T18:44:06.456050"),
+        subtask4 = new Subtask("Subtask Name4", "Subtask Desc4", 2, LocalDateTime.parse("2024-01-10T18:44:06.456050"),
                 Duration.ofHours(10));
-        subtask5 = new Subtask("Subtask Name5", "Subtask Desc5", 6, LocalDateTime.parse("2024-01-11T18:44:06.456050"),
+        subtask5 = new Subtask("Subtask Name5", "Subtask Desc5", 3, LocalDateTime.parse("2024-01-11T18:44:06.456050"),
                 Duration.ofHours(10));
     }
 }

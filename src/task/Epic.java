@@ -13,19 +13,22 @@ public class Epic extends Task {
     private LocalDateTime endTime;
     private List<Subtask> subtasks;
 
-    public Epic(String name, String description, LocalDateTime startTime) {
-        super(name, description, startTime, Duration.ofSeconds(0));
+
+    public Epic(String name, String description, int id, TaskStatus status) {
+        super(name, description, id, status);
         subtasks = new ArrayList<>();
     }
 
-    public Epic(String name, String description, int id, TaskStatus status, LocalDateTime statTime, Duration duration) {
-        super(name, description, id, status, statTime, duration);
+    public Epic(String name, String description, LocalDateTime startTime) {
+        super(name, description, startTime, Duration.ofHours(0));
+        subtasks = new ArrayList<>();
     }
 
     public Epic(String name, String description, int id, TaskStatus status, LocalDateTime statTime, Duration duration,
                 LocalDateTime endTime) {
         super(name, description, id, status, statTime, duration);
         this.endTime = endTime;
+        subtasks = new ArrayList<>();
     }
 
     public List<Subtask> getSubtasks() {
@@ -37,6 +40,7 @@ public class Epic extends Task {
         updateStatus();
         calculateStartTime();
         calculateEndTime();
+        duration = calculateDuration();
     }
 
     public void addSubtask(Subtask subtask) {
@@ -48,6 +52,7 @@ public class Epic extends Task {
             updateStatus();
             calculateStartTime();
             calculateEndTime();
+            duration = calculateDuration();
         }
     }
 
@@ -56,6 +61,7 @@ public class Epic extends Task {
         setStatus(TaskStatus.NEW);
         startTime = null;
         duration = null;
+        endTime = null;
     }
 
     public void changeSubtask(Subtask newSubtask) {
@@ -107,13 +113,18 @@ public class Epic extends Task {
                 startTime = subtask.startTime;
                 continue;
             }
-            if (startTime.isBefore(subtask.startTime)) {
+            if (startTime.isAfter(subtask.startTime)) {
                 startTime = subtask.startTime;
             }
         }
     }
 
-    public void calculateEndTime() {
+    private Duration calculateDuration() {
+        long hours = Duration.between(startTime, endTime).toHours();
+        return Duration.ofHours(hours);
+    }
+
+    private void calculateEndTime() {
         endTime = null;
         for (Subtask subtask : subtasks) {
             if (endTime == null) {
