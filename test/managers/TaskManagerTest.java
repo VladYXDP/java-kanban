@@ -285,8 +285,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+        Epic epic = manager.getEpic(1);
         manager.removeEpicById(epic1.getId());
-        Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertNull(manager.getEpic(epic1.getId()));
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
         if (manager instanceof FileBackedTasksManager) {
@@ -300,23 +300,38 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void removeSubtaskByIdTest() {
+        FileBackedTasksManager fileManager;
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         Epic epic = manager.getEpic(epic1.getId());
+        Subtask sub1 = manager.getSubtask(subtask1.getId());
         manager.removeSubtaskById(subtask1.getId());
         Assertions.assertTrue(epic.getSubtasks().isEmpty());
         Assertions.assertNull(manager.getSubtask(subtask1.getId()));
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            Assertions.assertNull(fileManager.getSubtask(sub1.getId()));
+        }
     }
 
     @Test
     public void getSubtaskByEpicTest() {
-        List<Integer> subtaskIds = List.of(subtask1.getId(), subtask2.getId());
+        FileBackedTasksManager fileManager;
+        List<Integer> subtaskIds = List.of(2, 3);
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         Epic epic = manager.getEpic(epic1.getId());
         for (int i = 0; i < epic.getSubtasks().size(); i++) {
             Assertions.assertTrue(subtaskIds.contains(epic.getSubtasks().get(i).getId()));
+        }
+        if (manager instanceof FileBackedTasksManager) {
+            fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+            fileManager.createTaskFromString();
+            for (int i = 0; i < epic.getSubtasks().size(); i++) {
+                Assertions.assertTrue(subtaskIds.contains(epic.getSubtasks().get(i).getId()));
+            }
         }
     }
 

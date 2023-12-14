@@ -120,8 +120,11 @@ public class Epic extends Task {
     }
 
     private Duration calculateDuration() {
-        long hours = Duration.between(startTime, endTime).toHours();
-        return Duration.ofHours(hours);
+        if (startTime != null && endTime != null) {
+            long hours = Duration.between(startTime, endTime).toHours();
+            return Duration.ofHours(hours);
+        }
+        return null;
     }
 
     private void calculateEndTime() {
