@@ -190,7 +190,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             Duration.parse(duration)));
                 }
             }
-            if (loadedStringTasks.get(loadedStringTasks.size() - 1).isEmpty()) {
+            if (!loadedStringTasks.get(loadedStringTasks.size() - 1).isEmpty()) {
                 loadHistory(historyFromString(loadedStringTasks));
             }
         }
