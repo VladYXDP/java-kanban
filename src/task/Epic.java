@@ -70,6 +70,9 @@ public class Epic extends Task {
                 subtasks.remove(subtask);
                 subtasks.add(newSubtask);
                 updateStatus();
+                calculateStartTime();
+                calculateEndTime();
+                calculateDuration();
                 break;
             }
         }

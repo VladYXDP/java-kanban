@@ -126,10 +126,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (task != null && validateStartTime(task)) {
+        if (task != null) {
             prioritizedTasks.remove(getTask(task.getId()));
-            tasks.put(task.getId(), task);
-            prioritizedTasks.add(task);
+            if (validateStartTime(task)) {
+                tasks.put(task.getId(), task);
+                prioritizedTasks.add(task);
+            }
         }
     }
 
@@ -146,11 +148,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtask != null && epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask)) {
+        if (subtask != null) {
             prioritizedTasks.remove(getSubtask(subtask.getId()));
-            subtasks.put(subtask.getId(), subtask);
-            epics.get(subtask.getEpicId()).changeSubtask(subtask);
-            prioritizedTasks.add(subtask);
+            if (epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask)) {
+                subtasks.put(subtask.getId(), subtask);
+                epics.get(subtask.getEpicId()).changeSubtask(subtask);
+                prioritizedTasks.add(subtask);
+            }
         }
     }
 
@@ -202,15 +206,18 @@ public class InMemoryTaskManager implements TaskManager {
     private boolean validateStartTime(Task task) {
         List<Task> prioritizedTaskList = getPrioritizedTasks();
         if (prioritizedTaskList.size() > 1) {
+            if (task.getEndTime().isBefore(prioritizedTaskList.get(0).getStartTime())) {
+                return true;
+            }
             for (int i = 0; i < prioritizedTaskList.size() - 1; i++) {
                 if (task.getStartTime().isAfter(prioritizedTaskList.get(i).getEndTime())
                         && task.getEndTime().isBefore(prioritizedTaskList.get(i + 1).getStartTime())) {
-                    return false;
+                    return true;
                 }
             }
-            return true;
         } else if (prioritizedTaskList.size() == 1) {
-            return task.getStartTime().isAfter(prioritizedTaskList.get(0).getEndTime());
+            return task.getStartTime().isAfter(prioritizedTaskList.get(0).getEndTime())
+                    || task.getEndTime().isBefore(prioritizedTaskList.get(0).getStartTime());
         }
         return true;
     }
