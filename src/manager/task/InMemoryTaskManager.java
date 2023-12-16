@@ -127,10 +127,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         if (task != null) {
+            Task oldTask = tasks.get(task.getId());
             prioritizedTasks.remove(getTask(task.getId()));
             if (validateStartTime(task)) {
                 tasks.put(task.getId(), task);
                 prioritizedTasks.add(task);
+            } else {
+                prioritizedTasks.add(oldTask);
             }
         }
     }
@@ -149,11 +152,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         if (subtask != null) {
+            Subtask oldSubtask = subtasks.get(subtask.getId());
             prioritizedTasks.remove(getSubtask(subtask.getId()));
             if (epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask)) {
                 subtasks.put(subtask.getId(), subtask);
                 epics.get(subtask.getEpicId()).changeSubtask(subtask);
                 prioritizedTasks.add(subtask);
+            } else {
+                prioritizedTasks.add(oldSubtask);
             }
         }
     }
@@ -206,7 +212,8 @@ public class InMemoryTaskManager implements TaskManager {
     private boolean validateStartTime(Task task) {
         List<Task> prioritizedTaskList = getPrioritizedTasks();
         if (prioritizedTaskList.size() > 1) {
-            if (task.getEndTime().isBefore(prioritizedTaskList.get(0).getStartTime())) {
+            if (task.getEndTime().isBefore(prioritizedTaskList.get(0).getStartTime())
+                    || task.getStartTime().isAfter(prioritizedTaskList.get(prioritizedTaskList.size() - 1).getEndTime())) {
                 return true;
             }
             for (int i = 0; i < prioritizedTaskList.size() - 1; i++) {

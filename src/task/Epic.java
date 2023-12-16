@@ -40,7 +40,7 @@ public class Epic extends Task {
         updateStatus();
         calculateStartTime();
         calculateEndTime();
-        duration = calculateDuration();
+        calculateDuration();
     }
 
     public void addSubtask(Subtask subtask) {
@@ -52,7 +52,7 @@ public class Epic extends Task {
             updateStatus();
             calculateStartTime();
             calculateEndTime();
-            duration = calculateDuration();
+            calculateDuration();
         }
     }
 
@@ -122,12 +122,14 @@ public class Epic extends Task {
         }
     }
 
-    private Duration calculateDuration() {
-        if (startTime != null && endTime != null) {
-            long hours = Duration.between(startTime, endTime).toHours();
-            return Duration.ofHours(hours);
+    private void calculateDuration() {
+        duration = Duration.ofHours(0);
+        for (Subtask subtask: subtasks) {
+            duration = duration.plus(subtask.duration);
         }
-        return null;
+        if (duration.equals(Duration.ofHours(0))) {
+            duration = null;
+        }
     }
 
     private void calculateEndTime() {
@@ -151,7 +153,7 @@ public class Epic extends Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subtasks, epic.subtasks) && super.equals(o);
+        return Objects.equals(subtasks, epic.subtasks);
     }
 
     @Override
