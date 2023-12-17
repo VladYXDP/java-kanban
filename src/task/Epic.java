@@ -149,6 +149,10 @@ public class Epic extends Task {
         return endTime;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

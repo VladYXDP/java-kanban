@@ -29,8 +29,8 @@ public class Subtask extends Task {
         return epicId;
     }
 
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
+    public Duration getDuration() {
+        return duration;
     }
 
     @Override

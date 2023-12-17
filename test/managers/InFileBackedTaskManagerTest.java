@@ -1,6 +1,7 @@
 package managers;
 
 import manager.task.FileBackedTasksManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import task.Epic;
 import task.Subtask;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     @BeforeEach
-    public void initSave() {
+    public void init() {
         manager = new FileBackedTasksManager(new File("tasks.csv"), null);
         manager.removeAllTask();
         manager.removeAllEpic();
@@ -40,5 +41,11 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
                 Duration.ofHours(10));
         subtask5 = new Subtask("Subtask Name5", "Subtask Desc5", 3, LocalDateTime.parse("2024-01-11T18:44:06.456050"),
                 Duration.ofHours(10));
+    }
+
+    @AfterEach
+    public void loadTaskFromFileTest() {
+        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+        fileManager.createTaskFromString();
     }
 }
