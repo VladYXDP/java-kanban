@@ -35,6 +35,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createTask(task2);
         manager.createTask(task3);
         manager.createTask(task4);
+
         Assertions.assertEquals(manager.getAllTask().size(), 4);
     }
 
@@ -43,6 +44,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createEpic(epic2);
         manager.createEpic(epic3);
+
         Assertions.assertEquals(manager.getAllEpic().size(), 3);
     }
 
@@ -52,6 +54,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createSubtask(subtask3);
+
         Assertions.assertEquals(manager.getAllSubtask().size(), 3);
     }
 
@@ -60,7 +63,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createTask(task1);
         manager.createTask(task2);
         manager.createTask(task3);
+
         manager.removeAllTask();
+
         Assertions.assertTrue(manager.getAllTask().isEmpty());
     }
 
@@ -72,7 +77,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createSubtask(subtask3);
+
         manager.removeAllEpic();
+
         Assertions.assertTrue(manager.getAllEpic().isEmpty());
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
     }
@@ -83,7 +90,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createSubtask(subtask3);
+
         manager.removeAllSubtask();
+
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
         Assertions.assertTrue(manager.getEpic(1).getSubtasks().isEmpty());
     }
@@ -91,15 +100,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void getTaskTest() {
         manager.createTask(task1);
+
         Task task = manager.getTask(task1.getId());
+
         Assertions.assertEquals(task.getId(), task1.getId());
     }
 
     @Test
     public void getEpicTest() {
         manager.createEpic(epic1);
+
         Epic epic = manager.getEpic(epic1.getId());
-        Assertions.assertEquals(manager.getHistory().size(), 1);
+
         Assertions.assertEquals(epic, epic1);
     }
 
@@ -107,7 +119,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void getSubtaskTest() {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
+
         Subtask subtask = manager.getSubtask(subtask1.getId());
+
         Assertions.assertEquals(subtask, subtask1);
     }
 
@@ -127,7 +141,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         task.setStatus(TaskStatus.IN_PROGRESS);
         task.setName("update name");
         task.setDescription("update desc");
+
         manager.updateTask(task);
+
         task = manager.getTask(task1.getId());
         Assertions.assertEquals(task.getStatus().name(), TaskStatus.IN_PROGRESS.name());
         Assertions.assertEquals(task.getName(), "update name");
@@ -140,7 +156,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = manager.getEpic(epic1.getId());
         epic.setName("update name");
         epic.setDescription("update desc");
+
         manager.updateEpic(epic);
+
         epic = manager.getEpic(epic1.getId());
         Assertions.assertEquals(epic.getName(), "update name");
         Assertions.assertEquals(epic.getDescription(), "update desc");
@@ -151,6 +169,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+
         Assertions.assertEquals(epic1.getStartTime(), subtask1.getStartTime());
     }
 
@@ -159,6 +178,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+
         Assertions.assertEquals(epic1.getEndTime(), subtask2.getEndTime());
     }
 
@@ -167,6 +187,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+
         Assertions.assertEquals(epic1.getDuration(), subtask2.getDuration().plus(subtask1.getDuration()));
     }
 
@@ -177,6 +198,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createSubtask(subtask3);
+
         Epic epic = manager.getEpic(epic1.getId());
         for (int i = 0; i < epic.getSubtasks().size(); i++) {
             Assertions.assertTrue(subtaskIds.contains(epic.getSubtasks().get(i).getId()));
@@ -195,6 +217,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.updateSubtask(subtask1);
         manager.updateSubtask(subtask2);
         manager.updateSubtask(subtask3);
+
         Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
     }
@@ -211,6 +234,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.updateSubtask(subtask1);
         manager.updateSubtask(subtask2);
         manager.updateSubtask(subtask3);
+
         Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.DONE.name());
     }
@@ -227,6 +251,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.updateSubtask(subtask1);
         manager.updateSubtask(subtask2);
         manager.updateSubtask(subtask3);
+
         Epic epic = manager.getEpic(epic1.getId());
         Assertions.assertEquals(epic.getStatus().name(), TaskStatus.IN_PROGRESS.name());
     }
@@ -238,7 +263,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Subtask sub1 = manager.getSubtask(subtask1.getId());
         sub1.setName("update name");
         sub1.setDescription("update desc");
+
         manager.updateSubtask(sub1);
+
         sub1 = manager.getSubtask(subtask1.getId());
         Assertions.assertEquals(sub1.getName(), "update name");
         Assertions.assertEquals(sub1.getDescription(), "update desc");
@@ -248,7 +275,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void removeTaskByIdTest() {
         manager.createTask(task1);
         Task task = manager.getTask(1);
+
         manager.removeTaskById(task.getId());
+
         Assertions.assertNull(manager.getTask(task1.getId()));
     }
 
@@ -257,7 +286,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+
         manager.removeEpicById(epic1.getId());
+
         Assertions.assertNull(manager.getEpic(epic1.getId()));
         Assertions.assertTrue(manager.getAllSubtask().isEmpty());
     }
@@ -267,7 +298,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         Epic epic = manager.getEpic(epic1.getId());
+
         manager.removeSubtaskById(subtask1.getId());
+
         Assertions.assertTrue(epic.getSubtasks().isEmpty());
         Assertions.assertNull(manager.getSubtask(subtask1.getId()));
     }
@@ -278,7 +311,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createEpic(epic1);
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
+
         Epic epic = manager.getEpic(epic1.getId());
+
         for (int i = 0; i < epic.getSubtasks().size(); i++) {
             Assertions.assertTrue(subtaskIds.contains(epic.getSubtasks().get(i).getId()));
         }
@@ -290,10 +325,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);
         manager.createTask(task1);
+
         manager.getTask(task1.getId());
         manager.getSubtask(subtask1.getId());
         manager.getSubtask(subtask2.getId());
         manager.getEpic(epic1.getId());
+
         Assertions.assertEquals(manager.getHistory().size(), 4);
     }
 }

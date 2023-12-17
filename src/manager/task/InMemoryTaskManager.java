@@ -128,7 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (task != null) {
             Task oldTask = tasks.get(task.getId());
-            prioritizedTasks.remove(getTask(task.getId()));
+            prioritizedTasks.remove(oldTask);
             if (validateStartTime(task)) {
                 tasks.put(task.getId(), task);
                 prioritizedTasks.add(task);
@@ -153,7 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) {
         if (subtask != null) {
             Subtask oldSubtask = subtasks.get(subtask.getId());
-            prioritizedTasks.remove(getSubtask(subtask.getId()));
+            prioritizedTasks.remove(oldSubtask);
             if (epics.containsKey(subtask.getEpicId()) && validateStartTime(subtask)) {
                 subtasks.put(subtask.getId(), subtask);
                 epics.get(subtask.getEpicId()).changeSubtask(subtask);

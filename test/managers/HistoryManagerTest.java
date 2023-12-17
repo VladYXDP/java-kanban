@@ -50,8 +50,10 @@ public class HistoryManagerTest {
         Assertions.assertEquals(historyManager.getHistory().size(), 2, "История задач должна быть равна 2");
         historyManager.addTask(new Task("name", "desc", 3, TaskStatus.NEW,
                 LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(0)));
-        Assertions.assertEquals(historyManager.getHistory().size(), 3, "История задач должна быть равна 2");
+        Assertions.assertEquals(historyManager.getHistory().size(), 3, "История задач должна быть равна 3");
+
         historyManager.remove(1);
+
         for(int i = 0; i < historyManager.getHistory().size(); i++){
             Assertions.assertEquals(taskIds.get(i), historyManager.getHistory().get(i).getId());
         }
@@ -70,7 +72,9 @@ public class HistoryManagerTest {
         historyManager.addTask(new Task("name", "desc", 3, TaskStatus.NEW,
                 LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(0)));
         Assertions.assertEquals(historyManager.getHistory().size(), 3, "История задач должна быть равна 2");
+
         historyManager.remove(2);
+
         for(int i = 0; i < historyManager.getHistory().size(); i++){
             Assertions.assertEquals(taskIds.get(i), historyManager.getHistory().get(i).getId());
         }
@@ -89,7 +93,9 @@ public class HistoryManagerTest {
         historyManager.addTask(new Task("name", "desc", 3, TaskStatus.NEW,
                 LocalDateTime.parse("2024-01-02T18:44:06.456050"), Duration.ofHours(0)));
         Assertions.assertEquals(historyManager.getHistory().size(), 3, "История задач должна быть равна 2");
+
         historyManager.remove(3);
+
         for(int i = 0; i < historyManager.getHistory().size(); i++){
             Assertions.assertEquals(taskIds.get(i), historyManager.getHistory().get(i).getId());
         }
