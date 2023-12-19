@@ -12,7 +12,6 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -53,12 +52,12 @@ public class HttpTaskServer {
 
             String requestMethod = exchange.getRequestMethod();
             URI uri = exchange.getRequestURI();
+            String[] pathParams = uri.getPath().split("/");
+            String queryParams = uri.getQuery();
             Optional<String> response;
-            Map<String, String> queryParams = Utils.queryToMap(uri.getQuery());
             switch (requestMethod) {
                 case "GET":
-                    String[] pathParams = uri.getPath().split("/");
-                    response = createResponseBodyForGetMethod(pathParams[2]);
+                    response = createResponseBody(pathParams, queryParams);
                     if (response.isPresent()) {
                         sendResponse(exchange, response.get(), 200);
                     }
@@ -74,9 +73,25 @@ public class HttpTaskServer {
             return gson.toJson(tasks);
         }
 
+        private String getTaskById(int id) {
+            Task task = manager.getTask(id);
+            if (task == null) {
+                return "";
+            }
+            return gson.toJson(task);
+        }
+
         private String getAllEpic() {
             List<Epic> epics = manager.getAllEpic();
             return gson.toJson(epics);
+        }
+
+        private String getEpicById(int id) {
+            Epic epic = manager.getEpic(id);
+            if (epic == null) {
+                return "";
+            }
+            return gson.toJson(epic);
         }
 
         private String getAllSubtask() {
@@ -84,19 +99,74 @@ public class HttpTaskServer {
             return gson.toJson(subtasks);
         }
 
-        private Optional<String> createResponseBodyForGetMethod(String pathParam) {
+        private String getSubtaskById(int id) {
+            Subtask subtask = manager.getSubtask(id);
+            if (subtask == null) {
+                return "";
+            }
+            return gson.toJson(subtask);
+        }
+
+        private String getSubtasksByEpicId(int id) {
+            Epic epic = manager.getEpic(id);
+            List<Subtask> subtasks = manager.getSubtaskByEpic(epic);
+            return gson.toJson(subtasks);
+        }
+
+        private String getHistory() {
+            List<Task> history = manager.getHistory();
+            return gson.toJson(history);
+        }
+
+        private String getPrioritizedTasks() {
+            List<Task> prioritizedTasks = manager.getPrioritizedTasks();
+            return gson.toJson(prioritizedTasks);
+        }
+
+        private Optional<String> createResponseBody(String[] pathParam, String queryParams) {
             String responseBody = null;
-            if (pathParam.equals("tasks")) {
-                responseBody = getAllTasks();
-            }
-            if (pathParam.equals("epics")) {
-                responseBody = getAllEpic();
-            }
-            if (pathParam.equals("epics")) {
-                responseBody = getAllEpic();
-            }
-            if (pathParam.equals("subtasks")) {
-                responseBody = getAllSubtask();
+            Map<String, String> queryParameters = Utils.queryToMap(queryParams);
+            if (pathParam.length == 2 && pathParam[1].equals("tasks")) {
+                responseBody = getPrioritizedTasks();
+            } else if (pathParam.length >= 3 && pathParam[1].equals("tasks")) {
+                if (pathParam[2].equals("history")) {
+                    responseBody = getHistory();
+                }
+                if (pathParam[2].equals("task")) {
+                    if (queryParameters != null) {
+                        if (queryParameters.containsKey("id")) {
+                            int id = Integer.parseInt(queryParameters.get("id"));
+                            responseBody = getTaskById(id);
+                        }
+                    } else {
+                        responseBody = getAllTasks();
+                    }
+                } else if (pathParam[2].equals("epic")) {
+                    if (queryParameters != null) {
+                        if (queryParameters.containsKey("id")) {
+                            int id = Integer.parseInt(queryParameters.get("id"));
+                            responseBody = getEpicById(id);
+                        }
+                    } else {
+                        responseBody = getAllEpic();
+                    }
+                } else if (pathParam[2].equals("subtask")) {
+                    if (pathParam.length == 4 && pathParam[3].equals("epic")) {
+                        if (queryParameters != null) {
+                            if (queryParameters.containsKey("id")) {
+                                int id = Integer.parseInt(queryParameters.get("id"));
+                                responseBody = getSubtasksByEpicId(id);
+                            }
+                        }
+                    } else if (queryParameters != null) {
+                        if (queryParameters.containsKey("id")) {
+                            int id = Integer.parseInt(queryParameters.get("id"));
+                            responseBody = getSubtaskById(id);
+                        }
+                    } else {
+                        responseBody = getAllSubtask();
+                    }
+                }
             }
             if (responseBody == null || responseBody.isEmpty()) {
                 return Optional.empty();
