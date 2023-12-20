@@ -81,6 +81,21 @@ public class HttpTaskServer {
             return gson.toJson(task);
         }
 
+        private String deleteTaskById(int id) {
+            manager.removeTaskById(id);
+            return "";
+        }
+
+        private String deleteAllTask() {
+            manager.removeAllTask();
+            return "";
+        }
+
+        private void updateTask(String jsonTask) {
+            Task task = gson.fromJson(jsonTask, Task.class);
+            manager.updateTask(task);
+        }
+
         private String getAllEpic() {
             List<Epic> epics = manager.getAllEpic();
             return gson.toJson(epics);
@@ -92,6 +107,21 @@ public class HttpTaskServer {
                 return "";
             }
             return gson.toJson(epic);
+        }
+
+        private String removeEpicById(int id) {
+            manager.removeEpicById(id);
+            return "";
+        }
+
+        private String removeAllEpic() {
+            manager.removeAllEpic();
+            return "";
+        }
+
+        private void updateEpic(String jsonEpic) {
+            Epic epic = gson.fromJson(jsonEpic, Epic.class);
+            manager.updateEpic(epic);
         }
 
         private String getAllSubtask() {
@@ -111,6 +141,21 @@ public class HttpTaskServer {
             Epic epic = manager.getEpic(id);
             List<Subtask> subtasks = manager.getSubtaskByEpic(epic);
             return gson.toJson(subtasks);
+        }
+
+        private String removeSubtaskById(int id) {
+            manager.removeSubtaskById(id);
+            return "";
+        }
+
+        private String removeAllSubtask() {
+            manager.removeAllSubtask();
+            return "";
+        }
+
+        private void updateSubtask(String jsonSubtask) {
+            Subtask subtask = gson.fromJson(jsonSubtask, Subtask.class);
+            manager.updateSubtask(subtask);
         }
 
         private String getHistory() {
