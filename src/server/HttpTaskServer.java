@@ -2,6 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -21,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class HttpTaskServer {
 
@@ -49,22 +50,114 @@ public class HttpTaskServer {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-
             String requestMethod = exchange.getRequestMethod();
             URI uri = exchange.getRequestURI();
             String[] pathParams = uri.getPath().split("/");
-            String queryParams = uri.getQuery();
-            Optional<String> response;
+            Map<String, String> queryParams = Utils.queryToMap(uri.getQuery());
+            String responseBody = null;
             switch (requestMethod) {
                 case "GET":
-                    response = createResponseBody(pathParams, queryParams);
-                    if (response.isPresent()) {
-                        sendResponse(exchange, response.get(), 200);
+                    if (pathParams.length == 2 && pathParams[1].equals("tasks")) {
+                        responseBody = getPrioritizedTasks();
+                    } else if (pathParams.length >= 3 && pathParams[1].equals("tasks")) {
+                        if (pathParams[2].equals("history")) {
+                            responseBody = getHistory();
+                        } else if (pathParams[2].equals("task")) {
+                            if (queryParams != null) {
+                                if (queryParams.containsKey("id")) {
+                                    int id = Integer.parseInt(queryParams.get("id"));
+                                    responseBody = getTaskById(id);
+                                } else {
+                                    sendResponse(exchange, "", 404);
+                                }
+                            } else {
+                                responseBody = getAllTasks();
+                            }
+                        } else if (pathParams[2].equals("epic")) {
+                            if (queryParams != null) {
+                                if (queryParams.containsKey("id")) {
+                                    int id = Integer.parseInt(queryParams.get("id"));
+                                    responseBody = getEpicById(id);
+                                } else {
+                                    sendResponse(exchange, "", 404);
+                                }
+                            } else {
+                                responseBody = getAllEpic();
+                            }
+                        } else if (pathParams[2].equals("subtask")) {
+                            if (pathParams.length == 4 && pathParams[3].equals("epic")) {
+                                if (queryParams != null) {
+                                    if (queryParams.containsKey("id")) {
+                                        int id = Integer.parseInt(queryParams.get("id"));
+                                        responseBody = getSubtasksByEpicId(id);
+                                    } else {
+                                        sendResponse(exchange, "", 404);
+                                    }
+                                }
+                            } else if (queryParams != null) {
+                                if (queryParams.containsKey("id")) {
+                                    int id = Integer.parseInt(queryParams.get("id"));
+                                    responseBody = getSubtaskById(id);
+                                } else {
+                                    sendResponse(exchange, "", 404);
+                                }
+                            } else {
+                                responseBody = getAllSubtask();
+                            }
+                        } else {
+                            sendResponse(exchange, "", 404);
+                        }
+                    } else {
+                        sendResponse(exchange, "", 404);
                     }
-                    sendResponse(exchange, "", 200);
-                    return;
-                case "POST":
+                    if (responseBody == null || responseBody.isEmpty()) {
+                        sendResponse(exchange, "", 204);
+                    } else {
+                        sendResponse(exchange, responseBody, 200);
+                    }
                     break;
+                case "POST":
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
+                    JsonElement jsonElement = JsonParser.parseString(requestBody);
+                    if (!requestBody.isEmpty() && jsonElement.isJsonObject()) {
+                        if (pathParams.length == 3) {
+                            if (pathParams[1].equals("tasks")) {
+                                if (pathParams[2].equals("task") && queryParams.containsKey("id")) {
+                                    int id = Integer.parseInt(queryParams.get("id"));
+                                    if (updateTask(requestBody, id)) {
+                                        sendResponse(exchange, "", 201);
+                                    } else {
+                                        sendResponse(exchange, "", 400);
+                                    }
+                                } else {
+                                    sendResponse(exchange, "", 404);
+                                }
+                            } else if (pathParams[2].equals("epic") && queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                if (updateEpic(requestBody, id)) {
+                                    sendResponse(exchange, "", 201);
+                                } else {
+                                    sendResponse(exchange, "", 400);
+                                }
+                            } else if (pathParams[2].equals("subtask") && queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                if (updateSubtask(requestBody, id)) {
+                                    sendResponse(exchange, "", 201);
+                                } else {
+                                    sendResponse(exchange, "", 400);
+                                }
+                            }
+                        } else {
+                            sendResponse(exchange, "", 404);
+                        }
+                    } else {
+                        sendResponse(exchange, "", 400);
+                    }
+                    break;
+                case "DELETE": {
+                    if (pathParams.length == 2 && pathParams[1].equals())
+                    break;
+                }
             }
         }
 
@@ -91,9 +184,14 @@ public class HttpTaskServer {
             return "";
         }
 
-        private void updateTask(String jsonTask) {
-            Task task = gson.fromJson(jsonTask, Task.class);
-            manager.updateTask(task);
+        private boolean updateTask(String jsonTask, int id) {
+            Task oldTask = manager.getTask(id);
+            Task newTask = gson.fromJson(jsonTask, Task.class);
+            if (oldTask.equals(newTask)) {
+                manager.updateTask(newTask);
+                return true;
+            }
+            return false;
         }
 
         private String getAllEpic() {
@@ -119,9 +217,14 @@ public class HttpTaskServer {
             return "";
         }
 
-        private void updateEpic(String jsonEpic) {
-            Epic epic = gson.fromJson(jsonEpic, Epic.class);
-            manager.updateEpic(epic);
+        private boolean updateEpic(String jsonEpic, int id) {
+            Epic oldEpic = manager.getEpic(id);
+            Epic newEpic = gson.fromJson(jsonEpic, Epic.class);
+            if (oldEpic.equals(newEpic)) {
+                manager.updateEpic(newEpic);
+                return true;
+            }
+            return false;
         }
 
         private String getAllSubtask() {
@@ -153,9 +256,14 @@ public class HttpTaskServer {
             return "";
         }
 
-        private void updateSubtask(String jsonSubtask) {
-            Subtask subtask = gson.fromJson(jsonSubtask, Subtask.class);
-            manager.updateSubtask(subtask);
+        private boolean updateSubtask(String jsonSubtask, int id) {
+            Subtask oldSubtask = manager.getSubtask(id);
+            Subtask newSubtask = gson.fromJson(jsonSubtask, Subtask.class);
+            if (oldSubtask.equals(newSubtask)) {
+                manager.updateSubtask(newSubtask);
+                return true;
+            }
+            return false;
         }
 
         private String getHistory() {
@@ -166,57 +274,6 @@ public class HttpTaskServer {
         private String getPrioritizedTasks() {
             List<Task> prioritizedTasks = manager.getPrioritizedTasks();
             return gson.toJson(prioritizedTasks);
-        }
-
-        private Optional<String> createResponseBody(String[] pathParam, String queryParams) {
-            String responseBody = null;
-            Map<String, String> queryParameters = Utils.queryToMap(queryParams);
-            if (pathParam.length == 2 && pathParam[1].equals("tasks")) {
-                responseBody = getPrioritizedTasks();
-            } else if (pathParam.length >= 3 && pathParam[1].equals("tasks")) {
-                if (pathParam[2].equals("history")) {
-                    responseBody = getHistory();
-                }
-                if (pathParam[2].equals("task")) {
-                    if (queryParameters != null) {
-                        if (queryParameters.containsKey("id")) {
-                            int id = Integer.parseInt(queryParameters.get("id"));
-                            responseBody = getTaskById(id);
-                        }
-                    } else {
-                        responseBody = getAllTasks();
-                    }
-                } else if (pathParam[2].equals("epic")) {
-                    if (queryParameters != null) {
-                        if (queryParameters.containsKey("id")) {
-                            int id = Integer.parseInt(queryParameters.get("id"));
-                            responseBody = getEpicById(id);
-                        }
-                    } else {
-                        responseBody = getAllEpic();
-                    }
-                } else if (pathParam[2].equals("subtask")) {
-                    if (pathParam.length == 4 && pathParam[3].equals("epic")) {
-                        if (queryParameters != null) {
-                            if (queryParameters.containsKey("id")) {
-                                int id = Integer.parseInt(queryParameters.get("id"));
-                                responseBody = getSubtasksByEpicId(id);
-                            }
-                        }
-                    } else if (queryParameters != null) {
-                        if (queryParameters.containsKey("id")) {
-                            int id = Integer.parseInt(queryParameters.get("id"));
-                            responseBody = getSubtaskById(id);
-                        }
-                    } else {
-                        responseBody = getAllSubtask();
-                    }
-                }
-            }
-            if (responseBody == null || responseBody.isEmpty()) {
-                return Optional.empty();
-            }
-            return Optional.of(responseBody);
         }
 
         private void sendResponse(HttpExchange exchange, String responseBody, int rCode) throws IOException {
