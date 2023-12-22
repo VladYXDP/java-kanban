@@ -57,12 +57,12 @@ public class HttpTaskServer {
             String responseBody = null;
             switch (requestMethod) {
                 case "GET":
-                    if (pathParams.length == 2 && pathParams[1].equals("tasks")) {
+                    if (pathParams.length == 2 && checkQueryParams(queryParams)) {
                         responseBody = getPrioritizedTasks();
-                    } else if (pathParams.length >= 3 && pathParams[1].equals("tasks")) {
-                        if (pathParams[2].equals("history")) {
+                    } else if (pathParams.length >= 3) {
+                        if (pathParams[2].equals("history") && checkQueryParams(queryParams) && pathParams.length == 3) {
                             responseBody = getHistory();
-                        } else if (pathParams[2].equals("task")) {
+                        } else if (pathParams[2].equals("task") && pathParams.length == 3) {
                             if (queryParams != null) {
                                 if (queryParams.containsKey("id")) {
                                     int id = Integer.parseInt(queryParams.get("id"));
@@ -73,7 +73,7 @@ public class HttpTaskServer {
                             } else {
                                 responseBody = getAllTasks();
                             }
-                        } else if (pathParams[2].equals("epic")) {
+                        } else if (pathParams[2].equals("epic") && pathParams.length == 3) {
                             if (queryParams != null) {
                                 if (queryParams.containsKey("id")) {
                                     int id = Integer.parseInt(queryParams.get("id"));
@@ -94,7 +94,7 @@ public class HttpTaskServer {
                                         sendResponse(exchange, "", 404);
                                     }
                                 }
-                            } else if (queryParams != null) {
+                            } else if (queryParams != null && pathParams.length == 3) {
                                 if (queryParams.containsKey("id")) {
                                     int id = Integer.parseInt(queryParams.get("id"));
                                     responseBody = getSubtaskById(id);
@@ -120,17 +120,13 @@ public class HttpTaskServer {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
                     JsonElement jsonElement = JsonParser.parseString(requestBody);
                     if (!requestBody.isEmpty() && jsonElement.isJsonObject()) {
-                        if (pathParams.length == 3) {
-                            if (pathParams[1].equals("tasks")) {
-                                if (pathParams[2].equals("task") && queryParams.containsKey("id")) {
-                                    int id = Integer.parseInt(queryParams.get("id"));
-                                    if (updateTask(requestBody, id)) {
-                                        sendResponse(exchange, "", 201);
-                                    } else {
-                                        sendResponse(exchange, "", 400);
-                                    }
+                        if (pathParams.length == 3 && checkQueryParams(queryParams)) {
+                            if (pathParams[2].equals("task") && queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                if (updateTask(requestBody, id)) {
+                                    sendResponse(exchange, "", 201);
                                 } else {
-                                    sendResponse(exchange, "", 404);
+                                    sendResponse(exchange, "", 400);
                                 }
                             } else if (pathParams[2].equals("epic") && queryParams.containsKey("id")) {
                                 int id = Integer.parseInt(queryParams.get("id"));
@@ -156,7 +152,7 @@ public class HttpTaskServer {
                     break;
                 case "DELETE": {
                     if (pathParams.length == 3) {
-                        if (pathParams[2].equals("task")) {
+                        if (pathParams[2].equals("task") && queryParams != null) {
                             if (queryParams.containsKey("id")) {
                                 int id = Integer.parseInt(queryParams.get("id"));
                                 deleteTaskById(id);
@@ -166,7 +162,7 @@ public class HttpTaskServer {
                             } else {
                                 sendResponse(exchange, "", 404);
                             }
-                        } else if (pathParams[2].equals("epic")) {
+                        } else if (pathParams[2].equals("epic") && queryParams != null) {
                             if (queryParams.containsKey("id")) {
                                 int id = Integer.parseInt(queryParams.get("id"));
                                 deleteEpicById(id);
@@ -176,7 +172,7 @@ public class HttpTaskServer {
                             } else {
                                 sendResponse(exchange, "", 404);
                             }
-                        } else if (pathParams[2].equals("subtask")) {
+                        } else if (pathParams[2].equals("subtask") && queryParams != null) {
                             if (queryParams.containsKey("id")) {
                                 int id = Integer.parseInt(queryParams.get("id"));
                                 deleteSubtaskById(id);
@@ -304,6 +300,10 @@ public class HttpTaskServer {
         private String getPrioritizedTasks() {
             List<Task> prioritizedTasks = manager.getPrioritizedTasks();
             return gson.toJson(prioritizedTasks);
+        }
+
+        private boolean checkQueryParams(Map<String, String> queryParams) {
+            return queryParams == null || queryParams.isEmpty();
         }
 
         private void sendResponse(HttpExchange exchange, String responseBody, int rCode) throws IOException {
