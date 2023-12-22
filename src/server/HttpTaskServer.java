@@ -155,7 +155,41 @@ public class HttpTaskServer {
                     }
                     break;
                 case "DELETE": {
-                    if (pathParams.length == 2 && pathParams[1].equals())
+                    if (pathParams.length == 3) {
+                        if (pathParams[2].equals("task")) {
+                            if (queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                deleteTaskById(id);
+                            } else if (queryParams.isEmpty()) {
+                                deleteAllTask();
+                                sendResponse(exchange, "", 200);
+                            } else {
+                                sendResponse(exchange, "", 404);
+                            }
+                        } else if (pathParams[2].equals("epic")) {
+                            if (queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                deleteEpicById(id);
+                            } else if (queryParams.isEmpty()) {
+                                deleteAllEpic();
+                                sendResponse(exchange, "", 200);
+                            } else {
+                                sendResponse(exchange, "", 404);
+                            }
+                        } else if (pathParams[2].equals("subtask")) {
+                            if (queryParams.containsKey("id")) {
+                                int id = Integer.parseInt(queryParams.get("id"));
+                                deleteSubtaskById(id);
+                            } else if (queryParams.isEmpty()) {
+                                deleteAllSubtask();
+                                sendResponse(exchange, "", 200);
+                            } else {
+                                sendResponse(exchange, "", 404);
+                            }
+                        }
+                    } else {
+                        sendResponse(exchange, "", 404);
+                    }
                     break;
                 }
             }
@@ -174,14 +208,12 @@ public class HttpTaskServer {
             return gson.toJson(task);
         }
 
-        private String deleteTaskById(int id) {
+        private void deleteTaskById(int id) {
             manager.removeTaskById(id);
-            return "";
         }
 
-        private String deleteAllTask() {
+        private void deleteAllTask() {
             manager.removeAllTask();
-            return "";
         }
 
         private boolean updateTask(String jsonTask, int id) {
@@ -207,14 +239,12 @@ public class HttpTaskServer {
             return gson.toJson(epic);
         }
 
-        private String removeEpicById(int id) {
+        private void deleteEpicById(int id) {
             manager.removeEpicById(id);
-            return "";
         }
 
-        private String removeAllEpic() {
+        private void deleteAllEpic() {
             manager.removeAllEpic();
-            return "";
         }
 
         private boolean updateEpic(String jsonEpic, int id) {
@@ -246,12 +276,12 @@ public class HttpTaskServer {
             return gson.toJson(subtasks);
         }
 
-        private String removeSubtaskById(int id) {
+        private String deleteSubtaskById(int id) {
             manager.removeSubtaskById(id);
             return "";
         }
 
-        private String removeAllSubtask() {
+        private String deleteAllSubtask() {
             manager.removeAllSubtask();
             return "";
         }
