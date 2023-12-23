@@ -234,6 +234,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (!tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
             taskIndex = task.getId();
+            prioritizedTasks.removeAll(subtasks.values());
         }
     }
 
@@ -249,6 +250,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             subtasks.put(subtask.getId(), subtask);
             taskIndex = subtask.getId();
             epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
+            prioritizedTasks.add(subtask);
         }
     }
 }
