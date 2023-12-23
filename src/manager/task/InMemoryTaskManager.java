@@ -225,8 +225,10 @@ public class InMemoryTaskManager implements TaskManager {
         } else if (prioritizedTaskList.size() == 1) {
             return task.getStartTime().isAfter(prioritizedTaskList.get(0).getEndTime())
                     || task.getEndTime().isBefore(prioritizedTaskList.get(0).getStartTime());
+        } else {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static class TaskComparatorByStartTime implements Comparator<Task> {

@@ -121,27 +121,30 @@ public class HttpTaskServer {
                         String requestBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
                         JsonElement jsonElement = JsonParser.parseString(requestBody);
                         if (!requestBody.isEmpty() && jsonElement.isJsonObject()) {
-                            if (pathParams.length == 3 && !checkQueryParams(queryParams)) {
-                                if (pathParams[2].equals("task") && queryParams.containsKey("id")) {
-                                    int id = Integer.parseInt(queryParams.get("id"));
-                                    if (updateTask(requestBody, id)) {
+                            if (pathParams.length == 3 && checkQueryParams(queryParams)) {
+                                if (pathParams[2].equals("task")) {
+                                    if (updateTask(requestBody)) {
+                                        sendResponse(exchange, "", 201);
+                                    } else if (addTask(requestBody)) {
                                         sendResponse(exchange, "", 201);
                                     } else {
-                                        sendResponse(exchange, "", 400);
+                                        sendResponse(exchange, "", 200);
                                     }
-                                } else if (pathParams[2].equals("epic") && queryParams.containsKey("id")) {
-                                    int id = Integer.parseInt(queryParams.get("id"));
-                                    if (updateEpic(requestBody, id)) {
+                                } else if (pathParams[2].equals("epic")) {
+                                    if (updateEpic(requestBody)) {
+                                        sendResponse(exchange, "", 201);
+                                    } else if (addEpic(requestBody)) {
                                         sendResponse(exchange, "", 201);
                                     } else {
-                                        sendResponse(exchange, "", 400);
+                                        sendResponse(exchange, "", 200);
                                     }
-                                } else if (pathParams[2].equals("subtask") && queryParams.containsKey("id")) {
-                                    int id = Integer.parseInt(queryParams.get("id"));
-                                    if (updateSubtask(requestBody, id)) {
+                                } else if (pathParams[2].equals("subtask")) {
+                                    if (updateSubtask(requestBody)) {
+                                        sendResponse(exchange, "", 201);
+                                    } else if (addSubtask(requestBody)) {
                                         sendResponse(exchange, "", 201);
                                     } else {
-                                        sendResponse(exchange, "", 400);
+                                        sendResponse(exchange, "", 200);
                                     }
                                 }
                             } else {
@@ -218,11 +221,21 @@ public class HttpTaskServer {
             manager.removeAllTask();
         }
 
-        private boolean updateTask(String jsonTask, int id) {
-            Task oldTask = manager.getTask(id);
+        private boolean updateTask(String jsonTask) {
             Task newTask = gson.fromJson(jsonTask, Task.class);
-            if (oldTask.equals(newTask)) {
+            Task oldTask = manager.getTask(newTask.getId());
+            if (oldTask != null) {
                 manager.updateTask(newTask);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean addTask(String jsonTask) {
+            Task newTask = gson.fromJson(jsonTask, Task.class);
+            manager.createTask(newTask);
+            Task task = manager.getTask(newTask.getId());
+            if (task != null) {
                 return true;
             }
             return false;
@@ -249,11 +262,21 @@ public class HttpTaskServer {
             manager.removeAllEpic();
         }
 
-        private boolean updateEpic(String jsonEpic, int id) {
-            Epic oldEpic = manager.getEpic(id);
+        private boolean updateEpic(String jsonEpic) {
             Epic newEpic = gson.fromJson(jsonEpic, Epic.class);
-            if (oldEpic.equals(newEpic)) {
+            Epic oldEpic = manager.getEpic(newEpic.getId());
+            if (oldEpic != null) {
                 manager.updateEpic(newEpic);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean addEpic(String jsonTask) {
+            Epic newEpic = gson.fromJson(jsonTask, Epic.class);
+            manager.createEpic(newEpic);
+            Epic epic = manager.getEpic(newEpic.getId());
+            if (epic != null) {
                 return true;
             }
             return false;
@@ -286,11 +309,21 @@ public class HttpTaskServer {
             manager.removeAllSubtask();
         }
 
-        private boolean updateSubtask(String jsonSubtask, int id) {
-            Subtask oldSubtask = manager.getSubtask(id);
-            Subtask newSubtask = gson.fromJson(jsonSubtask, Subtask.class);
-            if (oldSubtask.equals(newSubtask)) {
+        private boolean updateSubtask(String jsonEpic) {
+            Subtask newSubtask = gson.fromJson(jsonEpic, Subtask.class);
+            Subtask oldSubtask = manager.getSubtask(newSubtask.getId());
+            if (oldSubtask != null) {
                 manager.updateSubtask(newSubtask);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean addSubtask(String jsonTask) {
+            Subtask newSubtask = gson.fromJson(jsonTask, Subtask.class);
+            manager.createSubtask(newSubtask);
+            Subtask subtask = manager.getSubtask(newSubtask.getId());
+            if (subtask != null) {
                 return true;
             }
             return false;
