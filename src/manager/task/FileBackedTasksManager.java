@@ -22,12 +22,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private final List<String> loadedStringTasks;
 
     public static void main(String[] args) {
-        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("1.csv"));
+        FileBackedTasksManager fileBackedTasksManager = loadFromFile("1.csv");
         fileBackedTasksManager.createTaskFromString();
     }
 
-    public FileBackedTasksManager(File file, List<String> loadedStringTasks) {
-        this.file = file;
+    public FileBackedTasksManager(String filePath, List<String> loadedStringTasks) {
+        this.file = new File(filePath);
         this.loadedStringTasks = loadedStringTasks;
     }
 
@@ -124,7 +124,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
-    private void save() {
+    public void save() {
         if (file != null) {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.getName(), StandardCharsets.UTF_8, false))) {
                 bw.write("id,type,name,status,description,epic,start,duration,end");
@@ -151,9 +151,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(String filePath) {
         List<String> loadedStringTasks = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             br.readLine();
             while (br.ready()) {
                 String line = br.readLine();
@@ -162,7 +162,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerLoadException(e.getMessage());
         }
-        return new FileBackedTasksManager(file, loadedStringTasks);
+        return new FileBackedTasksManager(filePath, loadedStringTasks);
     }
 
     public void createTaskFromString() {
