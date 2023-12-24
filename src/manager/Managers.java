@@ -10,12 +10,14 @@ import java.io.IOException;
 
 public class Managers {
 
+    private static final String KV_SERVER_URI = "http://localhost:8078/";
+
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 
     public static TaskManager getDefault() throws IOException, InterruptedException {
-        return new HttpTaskManager("http://localhost:8078/");
+        return new HttpTaskManager(KV_SERVER_URI);
     }
 
     public static TaskManager getFileManager() {

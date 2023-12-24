@@ -230,22 +230,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void addTask(Task task) {
+    protected void addTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
             taskIndex = task.getId();
-            prioritizedTasks.removeAll(subtasks.values());
+            prioritizedTasks.add(task);
         }
     }
 
-    private void addEpic(Epic epic) {
+    protected void addEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) {
             epics.put(epic.getId(), epic);
             taskIndex = epic.getId();
         }
     }
 
-    private void addSubtask(Subtask subtask) {
+    protected void addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             subtasks.put(subtask.getId(), subtask);
             taskIndex = subtask.getId();

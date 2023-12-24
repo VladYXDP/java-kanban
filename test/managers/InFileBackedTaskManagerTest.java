@@ -10,14 +10,14 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
     @BeforeEach
     public void init() {
-        manager = new FileBackedTasksManager(new File("tasks.csv"), null);
+        manager = new FileBackedTasksManager("tasks.csv", null);
         manager.removeAllTask();
         manager.removeAllEpic();
     }
 
     @AfterEach
     public void loadTaskFromFileTest() {
-        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile("tasks.csv");
         fileManager.createTaskFromString();
     }
 }

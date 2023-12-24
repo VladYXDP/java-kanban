@@ -28,7 +28,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     private void addTask(List<Task> tasks) {
         for (Task task : tasks) {
-            super.tasks.put(task.getId(), task);
+            super.addTask(task);
         }
     }
 
