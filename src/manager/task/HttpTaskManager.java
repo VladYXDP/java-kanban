@@ -4,13 +4,11 @@ import client.KVTaskClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import gson.LocalDateTimeAdapter;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
@@ -22,32 +20,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         super("", null);
         kvTaskClient = new KVTaskClient(uri);
         gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
-    }
-
-    private void addTask(List<Task> tasks) {
-        for (Task task : tasks) {
-            super.addTask(task);
-        }
-    }
-
-    private void addEpic(List<Epic> epics) {
-        for (Epic epic : epics) {
-            super.epics.put(epic.getId(), epic);
-        }
-    }
-
-    private void addSubtask(List<Subtask> subtasks) {
-        for (Subtask subtask : subtasks) {
-            super.subtasks.put(subtask.getId(), subtask);
-        }
-    }
-
-    private void addHistory(List<Task> history) {
-        for (Task task : history) {
-            historyManager.addTask(task);
-        }
     }
 
     @Override
@@ -67,10 +40,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
         }
     }
 
-    public void loadTasksFromKvServer() throws IOException, InterruptedException {
+    public void load() throws IOException, InterruptedException {
         String tasksStr = kvTaskClient.load("tasks");
         String epicsStr = kvTaskClient.load("epics");
-        String subtasksStr = kvTaskClient.load("subtask");
+        String subtasksStr = kvTaskClient.load("subtasks");
         String historyStr = kvTaskClient.load("history");
 
         List<Task> tasks = gson.fromJson(tasksStr, new TypeToken<List<Task>>() {
@@ -85,5 +58,37 @@ public class HttpTaskManager extends FileBackedTasksManager {
         List<Task> history = gson.fromJson(historyStr, new TypeToken<List<Task>>() {
         }.getType());
         addHistory(history);
+    }
+
+    private void addTask(List<Task> tasks) {
+        if (tasks != null) {
+            for (Task task : tasks) {
+                super.addTask(task);
+            }
+        }
+    }
+
+    private void addEpic(List<Epic> epics) {
+        if (epics != null) {
+            for (Epic epic : epics) {
+                super.epics.put(epic.getId(), epic);
+            }
+        }
+    }
+
+    private void addSubtask(List<Subtask> subtasks) {
+        if (subtasks != null) {
+            for (Subtask subtask : subtasks) {
+                super.subtasks.put(subtask.getId(), subtask);
+            }
+        }
+    }
+
+    private void addHistory(List<Task> history) {
+        if (history != null) {
+            for (Task task : history) {
+                historyManager.addTask(task);
+            }
+        }
     }
 }

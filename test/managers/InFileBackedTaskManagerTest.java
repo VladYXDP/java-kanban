@@ -4,8 +4,6 @@ import manager.task.FileBackedTasksManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.File;
-
 public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     @BeforeEach
@@ -17,7 +15,7 @@ public class InFileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasks
 
     @AfterEach
     public void loadTaskFromFileTest() {
-        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile("tasks.csv");
+        FileBackedTasksManager fileManager = FileBackedTasksManager.load("tasks.csv");
         fileManager.createTaskFromString();
     }
 }

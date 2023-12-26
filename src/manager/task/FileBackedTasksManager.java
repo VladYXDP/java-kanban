@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private final List<String> loadedStringTasks;
 
     public static void main(String[] args) {
-        FileBackedTasksManager fileBackedTasksManager = loadFromFile("1.csv");
+        FileBackedTasksManager fileBackedTasksManager = load("1.csv");
         fileBackedTasksManager.createTaskFromString();
     }
 
@@ -125,33 +125,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        if (file != null) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.getName(), StandardCharsets.UTF_8, false))) {
-                bw.write("id,type,name,status,description,epic,start,duration,end");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.getName(), StandardCharsets.UTF_8, false))) {
+            bw.write("id,type,name,status,description,epic,start,duration,end");
+            bw.newLine();
+            for (Task task : getAllTask()) {
+                bw.write(task.taskToString());
                 bw.newLine();
-                for (Task task : getAllTask()) {
-                    bw.write(task.taskToString());
-                    bw.newLine();
-                }
-                for (Epic epic : getAllEpic()) {
-                    bw.write(epic.taskToString());
-                    bw.newLine();
-                }
-                for (Subtask subtask : getAllSubtask()) {
-                    bw.write(subtask.taskToString());
-                    bw.newLine();
-                }
-                bw.newLine();
-                if (!getHistory().isEmpty()) {
-                    bw.write(historyToString(getHistory()));
-                }
-            } catch (IOException e) {
-                throw new ManagerSaveException(e.getMessage());
             }
+            for (Epic epic : getAllEpic()) {
+                bw.write(epic.taskToString());
+                bw.newLine();
+            }
+            for (Subtask subtask : getAllSubtask()) {
+                bw.write(subtask.taskToString());
+                bw.newLine();
+            }
+            bw.newLine();
+            if (!getHistory().isEmpty()) {
+                bw.write(historyToString(getHistory()));
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException(e.getMessage());
         }
     }
 
-    public static FileBackedTasksManager loadFromFile(String filePath) {
+    public static FileBackedTasksManager load(String filePath) {
         List<String> loadedStringTasks = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             br.readLine();

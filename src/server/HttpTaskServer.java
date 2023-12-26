@@ -31,9 +31,10 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static Gson gson;
+    private HttpServer httpServer;
 
     public void start() throws IOException {
-        HttpServer httpServer = HttpServer.create();
+        httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TaskHandler());
         httpServer.start();
@@ -181,8 +182,7 @@ public class HttpTaskServer {
                                 if (checkQueryParams(queryParams)) {
                                     deleteAllSubtask();
                                     sendResponse(exchange, "", 200);
-                                }
-                                if (queryParams.containsKey("id")) {
+                                } else if (queryParams.containsKey("id")) {
                                     int id = Integer.parseInt(queryParams.get("id"));
                                     deleteSubtaskById(id);
                                 } else {
@@ -349,5 +349,9 @@ public class HttpTaskServer {
                 os.write(responseBody.getBytes());
             }
         }
+    }
+
+    public void stop() {
+        httpServer.stop(1000);
     }
 }

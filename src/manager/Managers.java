@@ -21,7 +21,7 @@ public class Managers {
     }
 
     public static TaskManager getFileManager() {
-        FileBackedTasksManager fileManager = FileBackedTasksManager.loadFromFile("httpTaskFile.csv");
+        FileBackedTasksManager fileManager = FileBackedTasksManager.load("httpTaskFile.csv");
         fileManager.createTaskFromString();
         return fileManager;
     }
