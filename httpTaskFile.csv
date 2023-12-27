@@ -1,6 +1,2 @@
 id,type,name,status,description,epic,start,duration,end
-5,TASK,Task name1,NEW,Task desc1,2023-12-30T18:44:06,PT8H,2023-12-31T02:44:06
-6,TASK,Task name2,NEW,Task desc2,2023-12-31T18:44:06,PT8H,2024-01-01T02:44:06
-7,TASK,Task name3,NEW,Task desc3,2024-01-01T18:44:06,PT8H,2024-01-02T02:44:06
 
-5,6,7
