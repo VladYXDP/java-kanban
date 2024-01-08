@@ -10,6 +10,8 @@ public class KVTaskClient {
 
     private final String kvServerUri;
     private String token;
+    private final String HEADER_ACCEPT = "Accept";
+    private final String HEADER_ACCEPT_JSON = "application/json";
 
     public KVTaskClient(String uri) throws IOException, InterruptedException {
         this.kvServerUri = uri;
@@ -23,13 +25,17 @@ public class KVTaskClient {
                 .GET()
                 .uri(registerUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = httpClient.send(request, handler);
-        this.token = response.body();
+        if (response.statusCode() == 200) {
+            this.token = response.body();
+        } else {
+            System.out.println("Получен код ответа " + response.statusCode());
+        }
     }
 
     public void put(String key, String json) throws IOException, InterruptedException {
@@ -39,12 +45,15 @@ public class KVTaskClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .uri(saveUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        httpClient.send(request, handler);
+        HttpResponse<String> response = httpClient.send(request, handler);
+        if (response.statusCode() != 200) {
+            System.out.println("Получен код ответа " + response.statusCode());
+        }
     }
 
     public String load(String key) throws IOException, InterruptedException {
@@ -54,12 +63,17 @@ public class KVTaskClient {
                 .GET()
                 .uri(saveUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = httpClient.send(request, handler);
-        return response.body();
+        if (response.statusCode() == 200) {
+            return response.body();
+        } else {
+            System.out.println("Получен код ответа " + response.statusCode());
+            return null;
+        }
     }
 }

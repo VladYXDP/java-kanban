@@ -4,11 +4,13 @@ import client.KVTaskClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import gson.LocalDateTimeAdapter;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
@@ -20,6 +22,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         super("", null);
         kvTaskClient = new KVTaskClient(uri);
         gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
     }
 
@@ -71,7 +74,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
     private void addEpic(List<Epic> epics) {
         if (epics != null) {
             for (Epic epic : epics) {
-                super.epics.put(epic.getId(), epic);
+                super.addEpic(epic);
             }
         }
     }
@@ -79,7 +82,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
     private void addSubtask(List<Subtask> subtasks) {
         if (subtasks != null) {
             for (Subtask subtask : subtasks) {
-                super.subtasks.put(subtask.getId(), subtask);
+                super.addSubtask(subtask);
             }
         }
     }
