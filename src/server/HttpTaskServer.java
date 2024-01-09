@@ -51,7 +51,7 @@ public class HttpTaskServer {
     private class TaskHandler implements HttpHandler {
 
         @Override
-        public void handle(HttpExchange exchange) throws IOException {
+        public void handle(HttpExchange exchange) {
             try {
                 String requestMethod = exchange.getRequestMethod();
                 URI uri = exchange.getRequestURI();
@@ -69,6 +69,8 @@ public class HttpTaskServer {
                         break;
                     }
                 }
+            } catch (Exception e) {
+                System.out.println("Ошибка во время обработки запроса: " + e);
             } finally {
                 exchange.close();
             }

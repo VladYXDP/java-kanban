@@ -22,6 +22,8 @@ import java.util.List;
 public class HttpTaskServerTest {
 
     private static final String HTTP_SERVER_URI = "http://localhost:8080/tasks/";
+    private static final String HEADER_ACCEPT = "Accept";
+    private static final String HEADER_ACCEPT_JSON = "application/json";
     private static HttpTaskServer httpTaskServer;
     private static Gson gson;
 
@@ -45,15 +47,15 @@ public class HttpTaskServerTest {
         httpTaskServer = new HttpTaskServer();
         httpTaskServer.start();
 
-        URI deleteAllTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI deleteAllEpicUri = URI.create(HTTP_SERVER_URI + "epic/");
-        URI deleteAllSubtaskUri = URI.create(HTTP_SERVER_URI + "subtask/");
+        URI deleteAllTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI deleteAllEpicUri = URI.create(HTTP_SERVER_URI + "epic");
+        URI deleteAllSubtaskUri = URI.create(HTTP_SERVER_URI + "subtask");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .DELETE()
                 .uri(deleteAllTaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -64,7 +66,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteAllEpicUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -72,7 +74,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteAllSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -111,8 +113,8 @@ public class HttpTaskServerTest {
 
     @Test
     public void getAllTaskTest() throws IOException, InterruptedException {
-        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task/");
+        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         List.of(task1, task2, task3).forEach(it -> {
@@ -120,7 +122,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addTaskUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -133,7 +135,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllTaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Task> tasks = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
@@ -152,7 +154,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addTaskUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -165,7 +167,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getTaskByIdUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         Task task = gson.fromJson(response.body(), Task.class);
@@ -184,7 +186,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addTaskUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -197,7 +199,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteTaskByIdUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -205,7 +207,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllTaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Task> task = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
@@ -225,7 +227,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addTaskUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -238,7 +240,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteAllTaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -246,7 +248,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllTaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Task> task = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
@@ -265,7 +267,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -278,7 +280,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllEpicUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Epic> epics = gson.fromJson(response.body(), new TypeToken<List<Epic>>() {
@@ -297,7 +299,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -310,7 +312,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getEpicByIdUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         Epic epic = gson.fromJson(response.body(), Epic.class);
@@ -329,7 +331,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -342,7 +344,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteEpicByIdUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -350,7 +352,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllEpicUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Epic> epic = gson.fromJson(response.body(), new TypeToken<List<Epic>>() {
@@ -370,7 +372,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -383,7 +385,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteAllEpicUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -391,7 +393,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getAllEpicUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Epic> epics = gson.fromJson(response.body(), new TypeToken<List<Epic>>() {
@@ -410,7 +412,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -422,7 +424,7 @@ public class HttpTaskServerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
                 .uri(addSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -430,7 +432,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(addSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Subtask> subtasks = gson.fromJson(response.body(), new TypeToken<List<Subtask>>() {
@@ -450,7 +452,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -462,7 +464,7 @@ public class HttpTaskServerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
                 .uri(addSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -470,7 +472,7 @@ public class HttpTaskServerTest {
                 .GET()
                 .uri(getSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         Subtask subtask = gson.fromJson(response.body(), Subtask.class);
@@ -489,7 +491,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -501,7 +503,7 @@ public class HttpTaskServerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
                 .uri(addSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -509,7 +511,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Subtask> subtasks = gson.fromJson(response.body(), new TypeToken<List<Subtask>>() {
@@ -529,7 +531,7 @@ public class HttpTaskServerTest {
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(it)))
                     .uri(addEpicUri)
                     .version(HttpClient.Version.HTTP_1_1)
-                    .header("Accept", "application/json")
+                    .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                     .build();
             try {
                 httpClient.send(request, handler);
@@ -541,7 +543,7 @@ public class HttpTaskServerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
                 .uri(addSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         httpClient.send(request, handler);
 
@@ -549,7 +551,7 @@ public class HttpTaskServerTest {
                 .DELETE()
                 .uri(deleteSubtaskUri)
                 .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
+                .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         List<Subtask> subtasks = gson.fromJson(response.body(), new TypeToken<List<Subtask>>() {
