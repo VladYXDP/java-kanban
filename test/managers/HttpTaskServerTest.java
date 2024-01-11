@@ -145,8 +145,8 @@ public class HttpTaskServerTest {
 
     @Test
     public void getTaskByIdTest() throws IOException, InterruptedException {
-        URI getTaskByIdUri = URI.create(HTTP_SERVER_URI + "task/?id=4");
-        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task/");
+        URI getTaskByIdUri = URI.create(HTTP_SERVER_URI + "task?id=44");
+        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         List.of(task1, task2, task3).forEach(it -> {
@@ -171,14 +171,14 @@ public class HttpTaskServerTest {
                 .build();
         HttpResponse<String> response = httpClient.send(request, handler);
         Task task = gson.fromJson(response.body(), Task.class);
-        Assertions.assertEquals(task.getId(), 4);
+        Assertions.assertEquals(task.getId(), 44);
     }
 
     @Test
     public void deleteTaskByIdTest() throws IOException, InterruptedException {
-        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI deleteTaskByIdUri = URI.create(HTTP_SERVER_URI + "task/?id=4");
+        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI deleteTaskByIdUri = URI.create(HTTP_SERVER_URI + "task?id=44");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         List.of(task1, task2, task3).forEach(it -> {
@@ -201,7 +201,11 @@ public class HttpTaskServerTest {
                 .version(HttpClient.Version.HTTP_1_1)
                 .header(HEADER_ACCEPT, HEADER_ACCEPT_JSON)
                 .build();
-        httpClient.send(request, handler);
+        try {
+            httpClient.send(request, handler);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         request = HttpRequest.newBuilder()
                 .GET()
@@ -217,9 +221,9 @@ public class HttpTaskServerTest {
 
     @Test
     public void deleteAllTaskTest() throws IOException, InterruptedException {
-        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI deleteAllTaskUri = URI.create(HTTP_SERVER_URI + "task/");
-        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task/");
+        URI getAllTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI deleteAllTaskUri = URI.create(HTTP_SERVER_URI + "task");
+        URI addTaskUri = URI.create(HTTP_SERVER_URI + "task");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         List.of(task1, task2, task3).forEach(it -> {
@@ -290,7 +294,7 @@ public class HttpTaskServerTest {
 
     @Test
     public void getEpicByIdTest() throws IOException, InterruptedException {
-        URI getEpicByIdUri = URI.create(HTTP_SERVER_URI + "epic/?id=4");
+        URI getEpicByIdUri = URI.create(HTTP_SERVER_URI + "epic?id=4");
         URI addEpicUri = URI.create(HTTP_SERVER_URI + "epic/");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
