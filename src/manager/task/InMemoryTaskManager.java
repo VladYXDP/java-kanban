@@ -41,6 +41,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         prioritizedTasks.removeAll(tasks.values());
         tasks.clear();
+        resetTaskIndex();
     }
 
     @Override
@@ -50,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         removeAllSubtask();
         epics.clear();
+        resetTaskIndex();
     }
 
     @Override
@@ -229,6 +231,12 @@ public class InMemoryTaskManager implements TaskManager {
             return true;
         }
         return false;
+    }
+
+    private void resetTaskIndex() {
+        if (tasks.isEmpty() && epics.isEmpty()) {
+            taskIndex = 0;
+        }
     }
 
     public static class TaskComparatorByStartTime implements Comparator<Task> {

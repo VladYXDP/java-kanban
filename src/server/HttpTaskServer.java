@@ -277,6 +277,7 @@ public class HttpTaskServer {
                     } else if (queryParams.containsKey("id")) {
                         int id = Integer.parseInt(queryParams.get("id"));
                         deleteTaskById(id);
+                        sendResponse(exchange, "", 200);
                     } else {
                         sendResponse(exchange, "", 404);
                     }
@@ -284,10 +285,10 @@ public class HttpTaskServer {
                     if (checkQueryParams(queryParams)) {
                         deleteAllEpic();
                         sendResponse(exchange, "", 200);
-                    }
-                    if (queryParams.containsKey("id")) {
+                    } else if (queryParams.containsKey("id")) {
                         int id = Integer.parseInt(queryParams.get("id"));
                         deleteEpicById(id);
+                        sendResponse(exchange, "", 200);
                     } else {
                         sendResponse(exchange, "", 404);
                     }
@@ -298,6 +299,7 @@ public class HttpTaskServer {
                     } else if (queryParams.containsKey("id")) {
                         int id = Integer.parseInt(queryParams.get("id"));
                         deleteSubtaskById(id);
+                        sendResponse(exchange, "", 200);
                     } else {
                         sendResponse(exchange, "", 404);
                     }
