@@ -34,7 +34,7 @@ public class KVTaskClient {
         if (response.statusCode() == 200) {
             this.token = response.body();
         } else {
-            System.out.println("Получен код ответа " + response.statusCode());
+            throw new IOException("Ошибка обработки запроса! Получен код ответа: " + response.statusCode());
         }
     }
 
@@ -52,7 +52,7 @@ public class KVTaskClient {
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = httpClient.send(request, handler);
         if (response.statusCode() != 200) {
-            System.out.println("Получен код ответа " + response.statusCode());
+            throw new IOException("Ошибка обработки запроса! Получен код ответа: " + response.statusCode());
         }
     }
 
@@ -72,8 +72,7 @@ public class KVTaskClient {
         if (response.statusCode() == 200) {
             return response.body();
         } else {
-            System.out.println("Получен код ответа " + response.statusCode());
-            return null;
+            throw new IOException("Ошибка обработки запроса! Получен код ответа: " + response.statusCode());
         }
     }
 }
